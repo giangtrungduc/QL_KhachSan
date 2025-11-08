@@ -10,6 +10,8 @@ module com.example.ql_khachsan {
     requires org.kordamp.bootstrapfx.core;
     requires eu.hansolo.tilesfx;
     requires com.almasb.fxgl.all;
+    requires com.zaxxer.hikari;
+    requires java.sql;
 
     opens com.example.ql_khachsan to javafx.fxml;
     exports com.example.ql_khachsan;
