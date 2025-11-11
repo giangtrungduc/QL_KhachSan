@@ -1,10 +1,11 @@
 package com.example.ql_khachsan.models;
+import com.example.ql_khachsan.enums.RoomStatus;
 
 // Lớp đại diện cho bảng PHONG
 public class Phong {
     private String maPhong;
     private String tenPhong;
-    private String trangThai; // VD: "Trống", "Đã đặt", "Đang sử dụng"
+    private RoomStatus trangThai; // VD: "Trống", "Đã đặt", "Đang sử dụng"
     private String maLoai; // Foreign Key tham chiếu đến LOAIPHONG
 
     // Constructor mặc định (cần thiết cho các framework/JDBC)
@@ -12,7 +13,7 @@ public class Phong {
     }
 
     // Constructor đầy đủ
-    public Phong(String maPhong, String tenPhong, String trangThai, String maLoai) {
+    public Phong(String maPhong, String tenPhong, RoomStatus trangThai, String maLoai) {
         this.maPhong = maPhong;
         this.tenPhong = tenPhong;
         this.trangThai = trangThai;
@@ -37,11 +38,11 @@ public class Phong {
         this.tenPhong = tenPhong;
     }
 
-    public String getTrangThai() {
+    public RoomStatus getTrangThai() {
         return trangThai;
     }
 
-    public void setTrangThai(String trangThai) {
+    public void setTrangThai(RoomStatus trangThai) {
         this.trangThai = trangThai;
     }
 

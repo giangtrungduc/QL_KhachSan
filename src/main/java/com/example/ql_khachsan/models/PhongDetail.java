@@ -1,6 +1,7 @@
 package com.example.ql_khachsan.models;
 
 import java.math.BigDecimal; // Cần thiết cho DonGia
+import com.example.ql_khachsan.enums.RoomStatus;
 
 /**
  * Data Transfer Object (DTO) cho dữ liệu Phòng Chi Tiết.
@@ -10,7 +11,7 @@ public class PhongDetail {
     // Thuộc tính từ bảng PHONG
     private String maPhong;
     private String tenPhong;
-    private String trangThai;
+    private RoomStatus trangThai;
 
     // Thuộc tính từ bảng LOAIPHONG
     private String maLoai; // Giữ lại để tham chiếu
@@ -23,7 +24,7 @@ public class PhongDetail {
     }
 
     // Constructor đầy đủ (Tùy chọn, thường dùng cho việc tạo đối tượng thủ công)
-    public PhongDetail(String maPhong, String tenPhong, String trangThai, String maLoai, String tenLoai, int soNguoiTD, BigDecimal donGia) {
+    public PhongDetail(String maPhong, String tenPhong, RoomStatus trangThai, String maLoai, String tenLoai, int soNguoiTD, BigDecimal donGia) {
         this.maPhong = maPhong;
         this.tenPhong = tenPhong;
         this.trangThai = trangThai;
@@ -42,8 +43,8 @@ public class PhongDetail {
     public String getTenPhong() { return tenPhong; }
     public void setTenPhong(String tenPhong) { this.tenPhong = tenPhong; }
 
-    public String getTrangThai() { return trangThai; }
-    public void setTrangThai(String trangThai) { this.trangThai = trangThai; }
+    public RoomStatus getTrangThai() { return trangThai; }
+    public void setTrangThai(RoomStatus trangThai) { this.trangThai = trangThai; }
 
     // Thuộc tính từ LOAIPHONG
     public String getMaLoai() { return maLoai; }

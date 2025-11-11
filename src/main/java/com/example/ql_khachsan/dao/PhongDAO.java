@@ -3,7 +3,7 @@ package com.example.ql_khachsan.dao;
 import com.example.ql_khachsan.models.Phong;
 import com.example.ql_khachsan.models.PhongDetail; // Giả định: Lớp này chứa Phong + thông tin LoaiPhong
 import com.example.ql_khachsan.untils.DatabaseConnection;
-
+import com.example.ql_khachsan.enums.RoomStatus;
 import java.sql.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -18,7 +18,7 @@ public class PhongDAO {
         Phong phong = new Phong();
         phong.setMaPhong(rs.getString("MaPhong"));
         phong.setTenPhong(rs.getString("TenPhong"));
-        phong.setTrangThai(rs.getString("TrangThai"));
+        phong.setTrangThai(RoomStatus.fromDbValue(rs.getString("TrangThai")));
         phong.setMaLoai(rs.getString("MaLoai"));
         return phong;
     }
@@ -33,7 +33,7 @@ public class PhongDAO {
         // Thuộc tính từ PHONG
         phongDetail.setMaPhong(rs.getString("MaPhong"));
         phongDetail.setTenPhong(rs.getString("TenPhong"));
-        phongDetail.setTrangThai(rs.getString("TrangThai"));
+        phongDetail.setTrangThai(RoomStatus.fromDbValue(rs.getString("TrangThai")));
 
         // Thuộc tính từ LOAIPHONG
         phongDetail.setMaLoai(rs.getString("MaLoai"));
@@ -83,7 +83,7 @@ public class PhongDAO {
 
             ps.setString(1, phong.getMaPhong());
             ps.setString(2, phong.getTenPhong());
-            ps.setString(3, phong.getTrangThai());
+            ps.setString(3, phong.getTrangThai().getDbValue());
             ps.setString(4, phong.getMaLoai());
 
             int rowsAffected = ps.executeUpdate();
@@ -109,7 +109,8 @@ public class PhongDAO {
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, phong.getTenPhong());
-            ps.setString(2, phong.getTrangThai());
+            ps.setString(2, phong.getTrangThai().getDbValue());
+
             ps.setString(3, phong.getMaLoai());
             ps.setString(4, phong.getMaPhong()); // WHERE clause
 
