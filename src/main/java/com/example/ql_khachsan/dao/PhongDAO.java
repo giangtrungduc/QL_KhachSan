@@ -4,6 +4,7 @@ import com.example.ql_khachsan.models.Phong;
 import com.example.ql_khachsan.models.PhongDetail;
 import com.example.ql_khachsan.untils.DatabaseConnection;
 import com.example.ql_khachsan.untils.TrangThaiDatPhong;
+import com.example.ql_khachsan.untils.TrangThaiPhong;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -19,7 +20,7 @@ public class PhongDAO {
         Phong phong = new Phong();
         phong.setMaPhong(rs.getString("MaPhong"));
         phong.setTenPhong(rs.getString("TenPhong"));
-        phong.setTrangThai(rs.getString("TrangThai"));
+        phong.setTrangThai(TrangThaiPhong.fromDbValue(rs.getString("TrangThai")));
         phong.setMaLoai(rs.getString("MaLoai"));
         return phong;
     }
@@ -33,7 +34,7 @@ public class PhongDAO {
         // Thuộc tính từ PHONG
         phongDetail.setMaPhong(rs.getString("MaPhong"));
         phongDetail.setTenPhong(rs.getString("TenPhong"));
-        phongDetail.setTrangThai(rs.getString("TrangThai"));
+        phongDetail.setTrangThai(TrangThaiPhong.fromDbValue(rs.getString("TrangThai")));
 
         // Thuộc tính từ LOAIPHONG (Do câu lệnh JOIN)
         phongDetail.setMaLoai(rs.getString("MaLoai"));
@@ -84,7 +85,7 @@ public class PhongDAO {
 
             ps.setString(1, phong.getMaPhong());
             ps.setString(2, phong.getTenPhong());
-            ps.setString(3, phong.getTrangThai());
+            ps.setString(3, phong.getTrangThai().getDbValue());
             ps.setString(4, phong.getMaLoai());
 
             int rowsAffected = ps.executeUpdate();
@@ -110,7 +111,7 @@ public class PhongDAO {
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, phong.getTenPhong());
-            ps.setString(2, phong.getTrangThai());
+            ps.setString(2, phong.getTrangThai().getDbValue());
             ps.setString(3, phong.getMaLoai());
             ps.setString(4, phong.getMaPhong());
 
@@ -158,7 +159,7 @@ public class PhongDAO {
         String sql = "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
                 "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
                 "FROM PHONG p JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
-                "WHERE p.TrangThai = 'Trống' " +
+                "WHERE p.TrangThai = ? " +
                 "AND NOT EXISTS (" +
                 "    SELECT 1 FROM PHIEUDATPHONG pdp " +
                 "    WHERE pdp.MaPhong = p.MaPhong " +
@@ -169,10 +170,11 @@ public class PhongDAO {
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
-            ps.setString(1, TrangThaiDatPhong.DA_DAT.toString());
-            ps.setString(2, TrangThaiDatPhong.DANG_SU_DUNG.toString());
-            ps.setTimestamp(3, Timestamp.valueOf(ngayTra));
-            ps.setTimestamp(4, Timestamp.valueOf(ngayNhan));
+            ps.setString(1, TrangThaiPhong.AVAILABLE.getDbValue());
+            ps.setString(2, TrangThaiDatPhong.DA_DAT.getDbValue());
+            ps.setString(3, TrangThaiDatPhong.DANG_SU_DUNG.getDbValue());
+            ps.setTimestamp(4, Timestamp.valueOf(ngayTra));
+            ps.setTimestamp(5, Timestamp.valueOf(ngayNhan));
 
             try (ResultSet rs = ps.executeQuery()) {
                 while (rs.next()) {

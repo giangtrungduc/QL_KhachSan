@@ -1,5 +1,8 @@
 package com.example.ql_khachsan.models;
 
+import com.example.ql_khachsan.untils.TrangThaiPhong;
+import javafx.beans.property.ObjectProperty;
+import javafx.beans.property.SimpleObjectProperty;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
 
@@ -7,14 +10,14 @@ import javafx.beans.property.StringProperty;
 public class Phong {
     private final StringProperty maPhong;
     private final StringProperty tenPhong;
-    private final StringProperty trangThai;
+    private final ObjectProperty<TrangThaiPhong> trangThai;
     private final StringProperty maLoai;
 
     // Constructor mặc định
     public Phong() {
         this.maPhong = new SimpleStringProperty();
         this.tenPhong = new SimpleStringProperty();
-        this.trangThai = new SimpleStringProperty();
+        this.trangThai = new SimpleObjectProperty<>();
         this.maLoai = new SimpleStringProperty();
     }
 
@@ -22,7 +25,14 @@ public class Phong {
     public Phong(String maPhong, String tenPhong, String trangThai, String maLoai) {
         this.maPhong = new SimpleStringProperty(maPhong);
         this.tenPhong = new SimpleStringProperty(tenPhong);
-        this.trangThai = new SimpleStringProperty(trangThai);
+        this.trangThai = new SimpleObjectProperty<>(TrangThaiPhong.valueOf(trangThai));
+        this.maLoai = new SimpleStringProperty(maLoai);
+    }
+
+    public Phong(String maPhong, String tenPhong, TrangThaiPhong trangThai, String maLoai) {
+        this.maPhong = new SimpleStringProperty(maPhong);
+        this.tenPhong = new SimpleStringProperty(tenPhong);
+        this.trangThai = new SimpleObjectProperty<>(trangThai);
         this.maLoai = new SimpleStringProperty(maLoai);
     }
 
@@ -36,9 +46,9 @@ public class Phong {
     public void setTenPhong(String tenPhong) { this.tenPhong.set(tenPhong); }
     public StringProperty tenPhongProperty() { return tenPhong; }
 
-    public String getTrangThai() { return trangThai.get(); }
-    public void setTrangThai(String trangThai) { this.trangThai.set(trangThai); }
-    public StringProperty trangThaiProperty() { return trangThai; }
+    public TrangThaiPhong getTrangThai() { return trangThai.get(); }
+    public void setTrangThai(TrangThaiPhong trangThai) { this.trangThai.set(trangThai); }
+    public ObjectProperty<TrangThaiPhong> trangThaiProperty() { return trangThai; }
 
     public String getMaLoai() { return maLoai.get(); }
     public void setMaLoai(String maLoai) { this.maLoai.set(maLoai); }

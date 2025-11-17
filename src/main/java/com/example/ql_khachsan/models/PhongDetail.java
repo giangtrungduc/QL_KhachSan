@@ -1,5 +1,6 @@
 package com.example.ql_khachsan.models;
 
+import com.example.ql_khachsan.untils.TrangThaiPhong;
 import javafx.beans.property.*;
 import java.math.BigDecimal;
 
@@ -11,7 +12,7 @@ public class PhongDetail {
     // Thuộc tính từ PHONG
     private final StringProperty maPhong;
     private final StringProperty tenPhong;
-    private final StringProperty trangThai;
+    private final ObjectProperty<TrangThaiPhong> trangThai;
 
     // Thuộc tính từ LOAIPHONG
     private final StringProperty maLoai;
@@ -23,7 +24,7 @@ public class PhongDetail {
     public PhongDetail() {
         this.maPhong = new SimpleStringProperty();
         this.tenPhong = new SimpleStringProperty();
-        this.trangThai = new SimpleStringProperty();
+        this.trangThai = new SimpleObjectProperty<>();
         this.maLoai = new SimpleStringProperty();
         this.tenLoai = new SimpleStringProperty();
         this.soNguoiTD = new SimpleIntegerProperty();
@@ -40,9 +41,9 @@ public class PhongDetail {
     public void setTenPhong(String tenPhong) { this.tenPhong.set(tenPhong); }
     public StringProperty tenPhongProperty() { return tenPhong; }
 
-    public String getTrangThai() { return trangThai.get(); }
-    public void setTrangThai(String trangThai) { this.trangThai.set(trangThai); }
-    public StringProperty trangThaiProperty() { return trangThai; }
+    public TrangThaiPhong getTrangThai() { return trangThai.get(); }
+    public void setTrangThai(TrangThaiPhong trangThai) { this.trangThai.set(trangThai); }
+    public ObjectProperty<TrangThaiPhong> trangThaiProperty() { return trangThai; }
 
     public String getMaLoai() { return maLoai.get(); }
     public void setMaLoai(String maLoai) { this.maLoai.set(maLoai); }

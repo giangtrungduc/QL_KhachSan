@@ -25,7 +25,7 @@ public class PhieuDatPhongDAO {
         pdp.setDonGiaThucTe(rs.getBigDecimal("DonGiaThucTe"));
 
         // Chuyển String từ CSDL thành Enum
-        pdp.setTrangThaiDatPhong(TrangThaiDatPhong.valueOf(rs.getString("TrangThaiDP")));
+        pdp.setTrangThaiDatPhong(TrangThaiDatPhong.fromDbValue(rs.getString("TrangThaiDatPhong")));
 
         pdp.setMaKH(rs.getString("MaKH"));
         pdp.setMaPhong(rs.getString("MaPhong"));
@@ -91,7 +91,7 @@ public class PhieuDatPhongDAO {
             ps.setTimestamp(3, Timestamp.valueOf(pdp.getNgayNhan()));
             ps.setTimestamp(4, Timestamp.valueOf(pdp.getNgayTra()));
             ps.setBigDecimal(5, pdp.getDonGiaThucTe());
-            ps.setString(6, pdp.getTrangThaiDatPhong().toString()); // Chuyển Enum thành String
+            ps.setString(6, pdp.getTrangThaiDatPhong().getDbValue());
             ps.setString(7, pdp.getMaKH());
             ps.setString(8, pdp.getMaPhong());
 
@@ -99,8 +99,6 @@ public class PhieuDatPhongDAO {
             return rowsAffected > 0;
 
         } catch (SQLException e) {
-            // Ném lỗi ra ngoài để JavaFX bắt và hiển thị cho người dùng
-            // (Đặc biệt là lỗi "Phòng này đã được đặt" từ Trigger 3)
             throw e;
         }
     }
@@ -120,7 +118,7 @@ public class PhieuDatPhongDAO {
             ps.setTimestamp(2, Timestamp.valueOf(pdp.getNgayNhan()));
             ps.setTimestamp(3, Timestamp.valueOf(pdp.getNgayTra()));
             ps.setBigDecimal(4, pdp.getDonGiaThucTe());
-            ps.setString(5, pdp.getTrangThaiDatPhong().toString());
+            ps.setString(5, pdp.getTrangThaiDatPhong().getDbValue());
             ps.setString(6, pdp.getMaKH());
             ps.setString(7, pdp.getMaPhong());
             ps.setString(8, pdp.getMaDP()); // Điều kiện WHERE
@@ -190,9 +188,8 @@ public class PhieuDatPhongDAO {
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, maPhong);
-            // Lấy tên Enum (ví dụ: "DA_DAT") để so sánh trong CSDL
-            ps.setString(2, TrangThaiDatPhong.DA_DAT.toString());
-            ps.setString(3, TrangThaiDatPhong.DANG_SU_DUNG.toString());
+            ps.setString(2, TrangThaiDatPhong.DA_DAT.getDbValue());
+            ps.setString(3, TrangThaiDatPhong.DANG_SU_DUNG.getDbValue());
 
             try (ResultSet rs = ps.executeQuery()) {
                 if (rs.next()) {
@@ -202,6 +199,6 @@ public class PhieuDatPhongDAO {
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return null; // Không tìm thấy phiếu nào đang hoạt động
+        return null;
     }
 }

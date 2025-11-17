@@ -14,5 +14,8 @@ module com.example.ql_khachsan {
     requires java.sql;
 
     opens com.example.ql_khachsan to javafx.fxml;
+    opens com.example.ql_khachsan.controllers to javafx.fxml;
+
     exports com.example.ql_khachsan;
+    exports com.example.ql_khachsan.controllers;
 }
