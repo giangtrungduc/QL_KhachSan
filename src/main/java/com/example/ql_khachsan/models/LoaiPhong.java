@@ -47,4 +47,9 @@ public class LoaiPhong {
     public BigDecimal getDonGia() { return donGia.get(); }
     public void setDonGia(BigDecimal value) { donGia.set(value); }
     public ObjectProperty<BigDecimal> donGiaProperty() { return donGia; }
+
+    @Override
+    public String toString() {
+        return tenLoai.get();
+    }
 }

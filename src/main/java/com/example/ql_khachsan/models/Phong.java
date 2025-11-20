@@ -1,15 +1,14 @@
 package com.example.ql_khachsan.models;
 
 import com.example.ql_khachsan.untils.TrangThaiPhong;
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
+import java.math.BigDecimal;
 
-// Lớp đại diện cho bảng PHONG (dùng cho Insert/Update)
 public class Phong {
     private final StringProperty maPhong;
     private final StringProperty tenPhong;
+    // Thêm giá phòng (để tương thích với code cũ, dù giá thực tế ở bảng LoaiPhong)
+    private final ObjectProperty<BigDecimal> giaPhong;
     private final ObjectProperty<TrangThaiPhong> trangThai;
     private final StringProperty maLoai;
 
@@ -17,22 +16,28 @@ public class Phong {
     public Phong() {
         this.maPhong = new SimpleStringProperty();
         this.tenPhong = new SimpleStringProperty();
-        this.trangThai = new SimpleObjectProperty<>();
+        this.giaPhong = new SimpleObjectProperty<>(BigDecimal.ZERO); // Mặc định là 0
+        // Sử dụng Enum TRONG làm mặc định
+        this.trangThai = new SimpleObjectProperty<>(TrangThaiPhong.TRONG);
         this.maLoai = new SimpleStringProperty();
     }
 
-    // Constructor đầy đủ
-    public Phong(String maPhong, String tenPhong, String trangThai, String maLoai) {
+    // Constructor đầy đủ (Dùng khi load từ DB lên)
+    public Phong(String maPhong, String tenPhong, BigDecimal giaPhong, TrangThaiPhong trangThai, String maLoai) {
         this.maPhong = new SimpleStringProperty(maPhong);
         this.tenPhong = new SimpleStringProperty(tenPhong);
-        this.trangThai = new SimpleObjectProperty<>(TrangThaiPhong.valueOf(trangThai));
+        this.giaPhong = new SimpleObjectProperty<>(giaPhong);
+        this.trangThai = new SimpleObjectProperty<>(trangThai);
         this.maLoai = new SimpleStringProperty(maLoai);
     }
 
-    public Phong(String maPhong, String tenPhong, TrangThaiPhong trangThai, String maLoai) {
+    // Constructor hỗ trợ load trạng thái từ String (nếu DB trả về String)
+    public Phong(String maPhong, String tenPhong, BigDecimal giaPhong, String trangThaiStr, String maLoai) {
         this.maPhong = new SimpleStringProperty(maPhong);
         this.tenPhong = new SimpleStringProperty(tenPhong);
-        this.trangThai = new SimpleObjectProperty<>(trangThai);
+        this.giaPhong = new SimpleObjectProperty<>(giaPhong);
+        // Dùng fromDbValue để convert chuỗi từ DB sang Enum an toàn
+        this.trangThai = new SimpleObjectProperty<>(TrangThaiPhong.fromDbValue(trangThaiStr));
         this.maLoai = new SimpleStringProperty(maLoai);
     }
 
@@ -45,6 +50,11 @@ public class Phong {
     public String getTenPhong() { return tenPhong.get(); }
     public void setTenPhong(String tenPhong) { this.tenPhong.set(tenPhong); }
     public StringProperty tenPhongProperty() { return tenPhong; }
+
+    // Getter/Setter cho Giá phòng
+    public BigDecimal getGiaPhong() { return giaPhong.get(); }
+    public void setGiaPhong(BigDecimal giaPhong) { this.giaPhong.set(giaPhong); }
+    public ObjectProperty<BigDecimal> giaPhongProperty() { return giaPhong; }
 
     public TrangThaiPhong getTrangThai() { return trangThai.get(); }
     public void setTrangThai(TrangThaiPhong trangThai) { this.trangThai.set(trangThai); }
