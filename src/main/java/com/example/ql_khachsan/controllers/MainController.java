@@ -10,8 +10,8 @@ public class MainController {
 
     @FXML private PhongController phongViewController;
     @FXML private KhachHangController khachHangViewController;
-    @FXML private BaoCaoController baoCaoViewController;
-    @FXML private LichSuHoaDonController lichSuHoaDonViewController;
+    @FXML private BaoCaoHoaDonController BaoCaoHoaDonViewController;
+    @FXML private DoanhThuController DoanhThuViewController;
 
     @FXML public void initialize(){
         System.out.println("Tải MainView");
@@ -22,11 +22,11 @@ public class MainController {
         if (khachHangViewController != null){
             System.out.println("Khách hàng đã có");
         }
-        if (baoCaoViewController != null){
-            System.out.println("Báo cáo đã có");
+        if (DoanhThuViewController != null){
+            System.out.println("Doanh thu đã có");
         }
-        if (lichSuHoaDonViewController != null){
-            System.out.println("Lịch sử hóa đơn đã có");
+        if (BaoCaoHoaDonViewController != null){
+            System.out.println("Báo cáo hóa đơn đã có");
         }
     }
 
