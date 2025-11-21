@@ -102,14 +102,16 @@
             </HBox>
 
             <!-- ======= BIỂU ĐỒ DOANH THU ======= -->
+            <!-- ======= BIỂU ĐỒ DOANH THU ======= -->
             <LineChart fx:id="chartDoanhThu"
                        title="Biểu đồ doanh thu"
-                       prefHeight="300">
+                       prefHeight="300"
+                       style="-fx-background-color: white; -fx-padding: 15; -fx-border-color: #ddd; -fx-border-width: 1;">
                 <xAxis>
-                    <CategoryAxis label="Thời gian"/>
+                    <CategoryAxis label="Thời gian" />
                 </xAxis>
                 <yAxis>
-                    <NumberAxis label="Doanh thu (VNĐ)"/>
+                    <NumberAxis label="Doanh thu (VNĐ)" />
                 </yAxis>
             </LineChart>
 
