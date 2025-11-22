@@ -13,10 +13,10 @@ public class HoaDonDAO {
      */
     private HoaDon mapResultSetToHoaDon(ResultSet rs) throws SQLException {
         HoaDon hd = new HoaDon();
-        hd.setMaHD(rs.getString("MaHD"));
-        hd.setGhiChu(rs.getString("GhiChu"));
-        hd.setNgayLap(rs.getTimestamp("NgayLap").toLocalDateTime());
-        hd.setMaDP(rs.getString("MaDP"));
+        hd.maHDProperty().set(rs.getString("MaHD"));
+        hd.ghiChuProperty().set(rs.getString("GhiChu"));
+        hd.ngayLapProperty().set(rs.getTimestamp("NgayLap").toLocalDateTime());
+        hd.maDPProperty().set(rs.getString("MaDP"));
         return hd;
     }
 
