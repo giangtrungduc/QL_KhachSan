@@ -1,4 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
+
 <?import javafx.geometry.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
@@ -61,7 +62,7 @@
                 <VBox spacing="5.0">
                     <children>
                         <Label text="Giá phòng (VNĐ):" />
-                        <TextField fx:id="txtGiaPhong" promptText="Nhập giá tiền" />
+                        <TextField fx:id="txtGiaPhong" editable="false" promptText="Nhập giá tiền" />
                     </children>
                 </VBox>
 
@@ -107,7 +108,7 @@
                         <TableColumn fx:id="colMaPhong" prefWidth="80.0" text="Mã Phòng" />
                         <TableColumn fx:id="colTenPhong" prefWidth="80.0" text="Tên Phòng" />
                         <TableColumn fx:id="colLoaiPhong" prefWidth="100.0" text="Loại Phòng" />
-                        <TableColumn fx:id="colSoNguoi" prefWidth="100.0" text="Loại Phòng" />
+                        <TableColumn fx:id="colSoNguoi" prefWidth="100.0" text="Số người tối đa" />
                         <TableColumn fx:id="colGiaPhong" prefWidth="120.0" text="Giá (VNĐ)" />
                         <TableColumn fx:id="colTrangThai" prefWidth="130.0" text="Trạng Thái" />
                     </columns>

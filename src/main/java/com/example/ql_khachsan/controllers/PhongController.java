@@ -234,8 +234,18 @@ public class PhongController implements Initializable {
             return;
         }
 
+        TrangThaiPhong trangThai = selected.getTrangThai();
+        if (trangThai == TrangThaiPhong.DA_DAT) {
+            thongBao("Không thể xóa", "Phòng này có khách đã đặt!", Alert.AlertType.INFORMATION);
+            return;
+        }
+        else if (trangThai == TrangThaiPhong.DANG_SU_DUNG) {
+            thongBao("Không thể xóa", "Phòng này có khách đang sử dụng!", Alert.AlertType.INFORMATION);
+            return;
+        }
+
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText("Xóa phòng " + selected.getMaPhong() + "?");
+        alert.setContentText("Bạn có chắc chắn muốn xóa phòng" + selected.getMaPhong() + "?");
         Optional<ButtonType> res = alert.showAndWait();
 
         if (res.isPresent() && res.get() == ButtonType.OK) {
