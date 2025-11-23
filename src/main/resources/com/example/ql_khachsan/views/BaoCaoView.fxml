@@ -1,14 +1,130 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
+<BorderPane xmlns="http://javafx.com/javafx"
             xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.ql_khachsan.controllers.BaoCaoController"
-            prefHeight="400.0" prefWidth="600.0">
+            fx:controller="com.example.ql_khachsan.controllers.BaoCaoController">
 
-</AnchorPane>
+    <!-- ===================== TOP FILTER ===================== -->
+    <top>
+        <VBox spacing="10">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+            <children>
+                <HBox spacing="15">
+                    <children>
+                        <Label text="Kiểu báo cáo:"/>
+                        <ComboBox fx:id="cbKieuBaoCao" prefWidth="150"/>
+
+                        <Label text="Tháng:"/>
+                        <ComboBox fx:id="cbThang" prefWidth="120"/>
+
+                        <Label text="Quý:"/>
+                        <ComboBox fx:id="cbQuy" prefWidth="120"/>
+
+                        <Label text="Năm:"/>
+                        <ComboBox fx:id="cbNam" prefWidth="120"/>
+
+                        <Button fx:id="btnXem" text="Xem báo cáo" style="-fx-background-color: #1e90ff; -fx-text-fill: white;"/>
+                    </children>
+                </HBox>
+            </children>
+        </VBox>
+    </top>
+
+    <!-- ===================== CENTER CONTENT ===================== -->
+    <center>
+        <VBox spacing="15">
+            <padding>
+                <Insets top="15" right="15" bottom="15" left="15"/>
+            </padding>
+
+            <!-- ======= 4 DASHBOARD CARDS ======= -->
+            <HBox spacing="15">
+                <children>
+
+                    <!-- Tổng doanh thu -->
+                    <VBox style="-fx-background-color: #f5f5f5; -fx-border-color: #ddd;"
+                          prefWidth="180">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <children>
+                            <Label text="Tổng doanh thu" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="txtTongDoanhThu" text="0 VNĐ" style="-fx-font-size: 16;"/>
+                        </children>
+                    </VBox>
+
+                    <!-- Lượt đặt -->
+                    <VBox style="-fx-background-color: #f5f5f5; -fx-border-color: #ddd;"
+                          prefWidth="180">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <children>
+                            <Label text="Số lượt đặt phòng" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="txtLuotDat" text="0" style="-fx-font-size: 16;"/>
+                        </children>
+                    </VBox>
+
+                    <!-- Tỷ lệ lấp phòng -->
+                    <VBox style="-fx-background-color: #f5f5f5; -fx-border-color: #ddd;"
+                          prefWidth="180">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <children>
+                            <Label text="Tỷ lệ lấp phòng" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="txtTyLeLap" text="0%" style="-fx-font-size: 16;"/>
+                        </children>
+                    </VBox>
+
+                    <!-- Loại phòng top -->
+                    <VBox style="-fx-background-color: #f5f5f5; -fx-border-color: #ddd;"
+                          prefWidth="180">
+                        <padding>
+                            <Insets top="15" right="15" bottom="15" left="15"/>
+                        </padding>
+                        <children>
+                            <Label text="Loại phòng doanh thu cao nhất" style="-fx-font-weight: bold;"/>
+                            <Label fx:id="txtLoaiPhongTop" text="---" style="-fx-font-size: 16;"/>
+                        </children>
+                    </VBox>
+
+                </children>
+            </HBox>
+
+            <!-- ======= BIỂU ĐỒ DOANH THU ======= -->
+            <!-- ======= BIỂU ĐỒ DOANH THU ======= -->
+            <LineChart fx:id="chartDoanhThu"
+                       title="Biểu đồ doanh thu"
+                       prefHeight="300"
+                       style="-fx-background-color: white; -fx-padding: 15; -fx-border-color: #ddd; -fx-border-width: 1;">
+                <xAxis>
+                    <CategoryAxis label="Thời gian" />
+                </xAxis>
+                <yAxis>
+                    <NumberAxis label="Doanh thu (VNĐ)" />
+                </yAxis>
+            </LineChart>
+
+            <!-- ======= BẢNG CHI TIẾT ======= -->
+            <TableView fx:id="tableChiTiet" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="colThoiGian" text="Thời gian" prefWidth="120"/>
+                    <TableColumn fx:id="colLuotDat" text="Số lượt đặt" prefWidth="120"/>
+                    <TableColumn fx:id="colDoanhThuPhong" text="Doanh thu phòng" prefWidth="180"/>
+                    <TableColumn fx:id="colPhuPhi" text="Phụ phí" prefWidth="150"/>
+                    <TableColumn fx:id="colTong" text="Tổng doanh thu" prefWidth="180"/>
+                </columns>
+            </TableView>
+        </VBox>
+    </center>
+</BorderPane>

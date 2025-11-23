@@ -1,14 +1,106 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
 <?import javafx.scene.control.*?>
 <?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
 
-<AnchorPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
+<AnchorPane xmlns:fx="http://javafx.com/fxml"
             fx:controller="com.example.ql_khachsan.controllers.KhachHangController"
-            prefHeight="400.0" prefWidth="600.0">
+            prefWidth="950" prefHeight="600">
 
+    <children>
+        <VBox spacing="10" prefWidth="930" prefHeight="580">
+            <!-- Thanh tìm kiếm -->
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                </padding>
+
+                <children>
+                    <Label text="Tìm kiếm:"/>
+                    <TextField fx:id="txtSearch" promptText="Nhập tên, CCCD, SĐT, Email, Mã KH..."/>
+                    <Button text="Tìm" onAction="#handleSearch"/>
+                    <Button text="Làm mới" onAction="#handleRefresh"/>
+                </children>
+            </HBox>
+
+            <!-- Bảng hiển thị khách hàng -->
+            <TableView fx:id="tblKhachHang" prefHeight="300">
+                <columns>
+                    <TableColumn fx:id="colMaKH" text="Mã KH" prefWidth="80"/>
+                    <TableColumn fx:id="colHoTen" text="Họ tên" prefWidth="150"/>
+                    <TableColumn fx:id="colCCCD" text="CCCD" prefWidth="120"/>
+                    <TableColumn fx:id="colSDT" text="SĐT" prefWidth="100"/>
+                    <TableColumn fx:id="colEmail" text="Email" prefWidth="200"/>
+                    <TableColumn fx:id="colTaiKhoan" text="Tài khoản" prefWidth="120"/>
+                </columns>
+            </TableView>
+
+            <!-- Form nhập / sửa thông tin khách hàng -->
+            <TitledPane text="Thông tin khách hàng" expanded="true">
+                <content>
+                    <GridPane hgap="10" vgap="10">
+                        <padding>
+                            <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                        </padding>
+
+                        <columnConstraints>
+                            <ColumnConstraints percentWidth="25"/>
+                            <ColumnConstraints percentWidth="25"/>
+                            <ColumnConstraints percentWidth="25"/>
+                            <ColumnConstraints percentWidth="25"/>
+                        </columnConstraints>
+
+                        <!-- Hàng 1 -->
+                        <Label text="Mã KH:" GridPane.rowIndex="0" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtMaKH" GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                   promptText="VD: KH001"/>
+
+                        <Label text="Họ tên:" GridPane.rowIndex="0" GridPane.columnIndex="2"/>
+                        <TextField fx:id="txtHoTen" GridPane.rowIndex="0" GridPane.columnIndex="3"/>
+
+                        <!-- Hàng 2 -->
+                        <Label text="CCCD:" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtCCCD" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+
+                        <Label text="SĐT:" GridPane.rowIndex="1" GridPane.columnIndex="2"/>
+                        <TextField fx:id="txtSDT" GridPane.rowIndex="1" GridPane.columnIndex="3"/>
+
+                        <!-- Hàng 3 -->
+                        <Label text="Email:" GridPane.rowIndex="2" GridPane.columnIndex="0"/>
+                        <TextField fx:id="txtEmail" GridPane.rowIndex="2" GridPane.columnIndex="1"/>
+
+                        <Label text="Tài khoản:" GridPane.rowIndex="2" GridPane.columnIndex="2"/>
+                        <TextField fx:id="txtTaiKhoan" GridPane.rowIndex="2" GridPane.columnIndex="3"/>
+
+                        <!-- Hàng 4 -->
+                        <Label text="Mật khẩu:" GridPane.rowIndex="3" GridPane.columnIndex="0"/>
+                        <!--                        <PasswordField fx:id="txtMatKhau" GridPane.rowIndex="3" GridPane.columnIndex="1"/>-->
+                        <HBox spacing="5" GridPane.rowIndex="3" GridPane.columnIndex="1">
+                            <PasswordField fx:id="txtMatKhau" prefWidth="150"/>
+                            <TextField fx:id="txtMatKhauVisible" prefWidth="150" visible="false" managed="false"/>
+
+                            <Button fx:id="btnTogglePassword" text="👁" onAction="#togglePassword"
+                                    style="-fx-background-color: transparent; -fx-cursor: hand;"/>
+                        </HBox>
+
+                    </GridPane>
+                </content>
+            </TitledPane>
+
+            <!-- Các nút chức năng -->
+            <HBox spacing="10">
+                <padding>
+                    <Insets top="10.0" right="10.0" bottom="10.0" left="10.0"/>
+                </padding>
+
+                <children>
+                    <Button text="Thêm mới" onAction="#handleAdd"/>
+                    <Button text="Cập nhật" onAction="#handleUpdate"/>
+                    <Button text="Xóa" onAction="#handleDelete"/>
+                    <Button text="Xóa form" onAction="#handleClearForm"/>
+                </children>
+            </HBox>
+        </VBox>
+    </children>
 </AnchorPane>
