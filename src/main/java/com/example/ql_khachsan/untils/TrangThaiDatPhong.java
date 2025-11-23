@@ -3,7 +3,7 @@ package com.example.ql_khachsan.untils;
 public enum TrangThaiDatPhong {
     DA_DAT("Đã đặt"),
     DANG_SU_DUNG("Đang sử dụng"),
-    HOAN_THANH("Hoàn thành"),
+    DANG_TRONG("Đang trống"),
     DA_HUY("Đã hủy");
 
     private final String dbValue;

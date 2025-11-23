@@ -17,7 +17,7 @@ public class DatabaseConnection {
     private static final String DB_PORT = "3306";
     private static final String DB_NAME = "qlkhachsan";
     private static final String DB_USER = "root"; // tên cũng vậy
-    private static final String DB_PASSWORD = "123456"; // mật khẩu tự đổi
+    private static final String DB_PASSWORD = ""; // mật khẩu tự đổi
 
     private static final String DB_URL = String.format(
             "jdbc:mysql://%s:%s/%s?useUnicode=true&characterEncoding=utf8&serverTimezone=Asia/Ho_Chi_Minh&useSSL=false",

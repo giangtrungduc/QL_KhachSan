@@ -169,8 +169,8 @@ public class PhongDAO {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
+            ps.setString(1, TrangThaiPhong.TRONG.getDbValue());
 
-            ps.setString(1, TrangThaiPhong.AVAILABLE.getDbValue());
             ps.setString(2, TrangThaiDatPhong.DA_DAT.getDbValue());
             ps.setString(3, TrangThaiDatPhong.DANG_SU_DUNG.getDbValue());
             ps.setTimestamp(4, Timestamp.valueOf(ngayTra));
