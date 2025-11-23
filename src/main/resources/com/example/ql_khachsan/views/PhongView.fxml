@@ -33,15 +33,8 @@
 
                 <VBox spacing="5.0">
                     <children>
-                        <Label text="Tên/Số phòng:" />
-                        <TextField fx:id="txtTenPhong" promptText="Ví dụ: Phòng 101" />
-                    </children>
-                </VBox>
-
-                <VBox spacing="5.0">
-                    <children>
-                        <Label text="Mã phòng:" />
-                        <TextField fx:id="txtMaPhong" editable="false" promptText="Ví dụ: P101" />
+                        <Label text="Tên phòng:" />
+                        <TextField fx:id="txtTenPhong" promptText="Ví dụ: 101" />
                     </children>
                 </VBox>
 
@@ -78,7 +71,7 @@
                         <Button fx:id="btnThem" mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: #27ae60;" text="Thêm" textFill="WHITE" />
                         <Button fx:id="btnSua" mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: #f39c12;" text="Sửa" textFill="WHITE" />
                         <Button fx:id="btnXoa" mnemonicParsing="false" prefWidth="60.0" style="-fx-background-color: #c0392b;" text="Xóa" textFill="WHITE" />
-                        <Button fx:id="btnLamMoi" mnemonicParsing="false" prefWidth="70.0" text="Làm mới" />
+                        <Button fx:id="btnLamMoi" mnemonicParsing="false" prefWidth="70.0" text="Đặt lại" />
                     </children>
                     <VBox.margin>
                         <Insets top="20.0" />
@@ -105,12 +98,13 @@
 
                 <TableView fx:id="tvPhong" prefHeight="480.0" prefWidth="570.0" VBox.vgrow="ALWAYS">
                     <columns>
+                        <TableColumn fx:id="colSTT" prefWidth="30.0" text="STT" />
                         <TableColumn fx:id="colMaPhong" prefWidth="80.0" text="Mã Phòng" />
                         <TableColumn fx:id="colTenPhong" prefWidth="80.0" text="Tên Phòng" />
                         <TableColumn fx:id="colLoaiPhong" prefWidth="100.0" text="Loại Phòng" />
                         <TableColumn fx:id="colSoNguoi" prefWidth="100.0" text="Số người tối đa" />
                         <TableColumn fx:id="colGiaPhong" prefWidth="120.0" text="Giá (VNĐ)" />
-                        <TableColumn fx:id="colTrangThai" prefWidth="130.0" text="Trạng Thái" />
+                        <TableColumn fx:id="colTrangThai" prefWidth="100.0" text="Trạng Thái" />
                     </columns>
                     <columnResizePolicy>
                         <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
