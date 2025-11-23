@@ -34,7 +34,7 @@
 
                 <Tab text="Ds HoaDon">
                     <content>
-                        <fx:include fx:id="BaoCaoHoaDon" source="BaoCaoHoaDonView.fxml"/>
+                        <fx:include fx:id="BaoCaoHoaDon" source="LichSuHoaDonView.fxml"/>
                     </content>
                 </Tab>
             </tabs>

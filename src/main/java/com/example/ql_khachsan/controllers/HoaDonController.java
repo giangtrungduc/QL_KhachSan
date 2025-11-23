@@ -21,16 +21,17 @@ public class HoaDonController {
     @FXML private Label lblSDT;
     @FXML private Label lblEmail;
     @FXML private Label lblPhong;
+    @FXML private Label lblLoaiPhong; // ⭐ Thêm Label Loại phòng
+    @FXML private Label lblDonGiaThucTe; // ⭐ Thêm Label Giá thực tế
     @FXML private Label lblNgayNhan;
     @FXML private Label lblNgayTra;
     @FXML private Label lblSoDem;
 
-    @FXML private Label lblMaHD; // Thêm
-    // @FXML private Label lblMaDP; // Không cần thiết hiển thị
+    @FXML private Label lblMaHD;
     @FXML private Label lblNgayLap;
     @FXML private Label lblGhiChu;
     @FXML private Label lblTongTien;
-    @FXML private Label lblTongTienPhong; // Thêm label hiển thị chi tiết tiền phòng
+    @FXML private Label lblTongTienPhong;
 
     @FXML private Button btnExport;
 
@@ -48,18 +49,19 @@ public class HoaDonController {
         lblGhiChu.setText("Ghi chú: " + (hd.getGhiChu() != null ? hd.getGhiChu() : ""));
 
         // --- Thông tin Khách hàng ---
-        lblTenKhachHang.setText("Khách hàng: " + hd.getTenKhachHang());
+        lblTenKhachHang.setText("Khách hàng: " + hd.getTenKH());
         lblSDT.setText("SĐT: " + hd.getSdt());
         lblEmail.setText("Email: " + hd.getEmail());
 
         // --- Thông tin Đặt phòng ---
         lblPhong.setText("Phòng: " + hd.getTenPhong());
+        lblLoaiPhong.setText("Loại phòng: " + hd.getTenLoai()); // ⭐ Hiển thị Loại phòng
+        lblDonGiaThucTe.setText("Giá thực tế/đêm: " + String.format("%,.2f VNĐ", hd.getDonGiaThucTe())); // ⭐ Hiển thị Giá thực tế
         lblNgayNhan.setText("Ngày nhận: " + hd.getNgayNhan().format(dtfView));
         lblNgayTra.setText("Ngày trả: " + hd.getNgayTra().format(dtfView));
         lblSoDem.setText("Số đêm: " + soDem);
 
         // --- Tổng tiền ---
-        // Tổng tiền hiện tại chỉ tính tiền phòng
         String tongTienFormat = String.format("%,.2f VNĐ", hd.getTongTien());
         lblTongTien.setText(tongTienFormat);
         lblTongTienPhong.setText(tongTienFormat);
@@ -68,17 +70,14 @@ public class HoaDonController {
     @FXML
     private void handleExport() {
         try {
-            // Lấy VBox (root) để chụp ảnh
             VBox root = (VBox) btnExport.getParent();
             WritableImage image = root.snapshot(null, null);
 
-            // Xóa ký tự không phải số trong MaHD để tạo tên file
             String maHD = lblMaHD.getText().replace("Mã HĐ: ", "").trim();
             File file = new File("HoaDon_" + maHD + ".png");
 
             ImageIO.write(SwingFXUtils.fromFXImage(image, null), "png", file);
 
-            // Hiển thị thông báo thành công
             Alert alert = new Alert(Alert.AlertType.INFORMATION, "Xuất hóa đơn thành công tại: " + file.getAbsolutePath());
             alert.showAndWait();
 

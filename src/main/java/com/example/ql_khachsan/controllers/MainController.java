@@ -2,7 +2,6 @@ package com.example.ql_khachsan.controllers;
 
 import javafx.fxml.FXML;
 import javafx.scene.control.TabPane;
-import javafx.scene.layout.AnchorPane;
 
 public class MainController {
 
@@ -10,7 +9,7 @@ public class MainController {
 
     @FXML private PhongController phongViewController;
     @FXML private KhachHangController khachHangViewController;
-    @FXML private BaoCaoHoaDonController BaoCaoHoaDonViewController;
+    @FXML private LichSuHoaDonController BaoCaoHoaDonViewController;
     @FXML private DoanhThuController DoanhThuViewController;
 
     @FXML public void initialize(){

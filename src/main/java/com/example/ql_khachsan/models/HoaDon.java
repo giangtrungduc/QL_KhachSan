@@ -11,45 +11,68 @@ public class HoaDon {
     private final ObjectProperty<LocalDateTime> ngayLap;
     private final DoubleProperty tongTien;
 
-    // --- Bổ sung thông tin chi tiết ---
-    private String tenKhachHang;
+    private final StringProperty tenKH;
+
+    // --- Bổ sung thông tin chi tiết (Lấy từ JOIN) ---
+    // Các trường này không cần Property vì chúng chỉ hiển thị chi tiết trong cửa sổ pop-up,
+    // không phải cột chính của TableView.
     private String sdt;
     private String email;
     private String tenPhong;
+    private String tenLoai;
+    private double donGiaThucTe;
     private LocalDateTime ngayNhan;
     private LocalDateTime ngayTra;
 
-    // Constructor cơ bản cho TableView
-    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, double tongTien) {
+
+    // Constructor cơ bản cho TableView (Thêm tham số tenKhachHang)
+    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, double tongTien, String tenKH) {
         this.stt = new SimpleIntegerProperty(stt);
         this.maHD = new SimpleStringProperty(maHD);
         this.maDP = new SimpleStringProperty(maDP);
         this.ghiChu = new SimpleStringProperty(ghiChu);
         this.ngayLap = new SimpleObjectProperty<>(ngayLap);
         this.tongTien = new SimpleDoubleProperty(tongTien);
+        this.tenKH = new SimpleStringProperty(tenKH);
     }
 
+    // Constructor (Chỉ dùng cho Controller khi gọi DAO)
+    // Giữ nguyên constructor này nhưng cần đảm bảo các Property được khởi tạo
+    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, double tongTien) {
+        this(stt, maHD, maDP, ghiChu, ngayLap, tongTien, null); // Chuyển sang constructor đầy đủ
+    }
+
+    // Constructor rỗng (Dùng cho DAO)
     public HoaDon() {
-        // Khởi tạo tất cả các trường Property
         this.stt = new SimpleIntegerProperty();
         this.maHD = new SimpleStringProperty();
         this.maDP = new SimpleStringProperty();
         this.ghiChu = new SimpleStringProperty();
         this.ngayLap = new SimpleObjectProperty<>();
         this.tongTien = new SimpleDoubleProperty();
+        this.tenKH = new SimpleStringProperty();
 
         // Khởi tạo các trường chi tiết
-        this.tenKhachHang = null;
         this.sdt = null;
         this.email = null;
         this.tenPhong = null;
+        this.tenLoai = null;
+        this.donGiaThucTe = 0.0;
         this.ngayNhan = null;
         this.ngayTra = null;
     }
-    // Getters and Setters cho các thuộc tính chi tiết (không cần Property vì không hiển thị trên TableView chính)
 
-    public String getTenKhachHang() { return tenKhachHang; }
-    public void setTenKhachHang(String tenKhachHang) { this.tenKhachHang = tenKhachHang; }
+    // --- Getters và Setters cho các thuộc tính liên kết (PROPERTY) ---
+
+
+
+
+
+    // --- Getters và Setters cho các thuộc tính chi tiết (Non-Property) ---
+    // Loại bỏ trường 'private String tenKhachHang;' cũ (nếu có) để tránh nhầm lẫn
+
+    public String getTenKH() { return tenKH.get(); }
+    public void setTenKH(String tenKH) { this.tenKH.set(tenKH); }
 
     public String getSdt() { return sdt; }
     public void setSdt(String sdt) { this.sdt = sdt; }
@@ -60,13 +83,22 @@ public class HoaDon {
     public String getTenPhong() { return tenPhong; }
     public void setTenPhong(String tenPhong) { this.tenPhong = tenPhong; }
 
+    public String getTenLoai() { return tenLoai; }
+    public void setTenLoai(String tenLoai) { this.tenLoai = tenLoai; }
+
+    public double getDonGiaThucTe() { return donGiaThucTe; }
+    public void setDonGiaThucTe(double donGiaThucTe) { this.donGiaThucTe = donGiaThucTe; }
+
     public LocalDateTime getNgayNhan() { return ngayNhan; }
     public void setNgayNhan(LocalDateTime ngayNhan) { this.ngayNhan = ngayNhan; }
 
     public LocalDateTime getNgayTra() { return ngayTra; }
     public void setNgayTra(LocalDateTime ngayTra) { this.ngayTra = ngayTra; }
 
-    // Getters và Property cho TableView
+    // --- Getters và Property cho TableView (Khác) ---
+
+    public StringProperty tenKHProperty() { return tenKH; }
+
     public int getStt() { return stt.get(); }
     public IntegerProperty sttProperty() { return stt; }
 
