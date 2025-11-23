@@ -188,4 +188,38 @@ public class PhongDAO {
         }
         return availableRooms;
     }
+
+    // ==================== 6. Tìm kiếm ====================
+    /**
+     * Tìm kiếm phòng theo từ khóa (Mã phòng, Tên phòng, hoặc Tên loại).
+     * Sử dụng kỹ thuật toán tử LIKE trong SQL.
+     */
+    public List<PhongDetail> search(String keyword) {
+        List<PhongDetail> list = new ArrayList<>();
+        String sql = "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
+                "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
+                "FROM PHONG p " +
+                "JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
+                "WHERE p.MaPhong LIKE ? OR p.TenPhong LIKE ? OR lp.TenLoai LIKE ?";
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql)) {
+
+            // Tạo chuỗi tìm kiếm dạng "%keyword%"
+            String searchPattern = "%" + keyword + "%";
+
+            // Gán giá trị cho cả 3 dấu hỏi chấm
+            ps.setString(1, searchPattern);
+            ps.setString(2, searchPattern);
+            ps.setString(3, searchPattern);
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToPhongDetail(rs)); // Tận dụng hàm map cũ của bạn
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
+    }
 }

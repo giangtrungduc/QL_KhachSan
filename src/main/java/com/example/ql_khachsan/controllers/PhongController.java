@@ -62,26 +62,20 @@ public class PhongController implements Initializable {
         loaiPhongDAO = new LoaiPhongDAO();
         danhSachPhong = FXCollections.observableArrayList();
 
+        tvPhong.setItems(danhSachPhong);
+
         loadData();
 
         // --- SETUP TÌM KIẾM ---
-        javafx.collections.transformation.FilteredList<PhongDetail> filteredData =
-                new javafx.collections.transformation.FilteredList<>(danhSachPhong, p -> true);
-
         txtTimKiem.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(phong -> {
-                if (newValue == null || newValue.isEmpty()) return true;
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (phong.getMaPhong().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (phong.getTenPhong().toLowerCase().contains(lowerCaseFilter)) return true;
-                else if (phong.getTenLoai().toLowerCase().contains(lowerCaseFilter)) return true;
-                return false;
-            });
+            // Nếu ô trống -> Load lại toàn bộ danh sách
+            if (newValue == null || newValue.trim().isEmpty()) {
+                loadData();
+            } else {
+                // Nếu có chữ -> Gọi hàm tìm kiếm dưới Database
+                timKiemTuDB(newValue.trim());
+            }
         });
-        javafx.collections.transformation.SortedList<PhongDetail> sortedData =
-                new javafx.collections.transformation.SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tvPhong.comparatorProperty());
-        tvPhong.setItems(sortedData);
 
         // --- SETUP UI AUTO FILL ---
         txtSoNguoi.setEditable(false);
@@ -290,5 +284,10 @@ public class PhongController implements Initializable {
         a.setHeaderText(null);
         a.setContentText(content);
         a.showAndWait();
+    }
+
+    private void timKiemTuDB(String keyword) {
+        // Kết quả trả về sẽ được đổ vào danhSachPhong -> Bảng tự cập nhật
+        danhSachPhong.setAll(phongDAO.search(keyword));
     }
 }
