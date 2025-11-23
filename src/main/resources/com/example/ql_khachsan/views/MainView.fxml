@@ -14,27 +14,27 @@
     <center>
         <TabPane fx:id="mainTable" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
             <tabs>
-                <Tab text="Tab1">
+                <Tab text="Ds Phòng">
                     <content>
                         <fx:include fx:id="phongView" source="PhongView.fxml"/>
                     </content>
                 </Tab>
 
-                <Tab text="Tab2">
+                <Tab text="Ds KhachHang">
                     <content>
                         <fx:include fx:id="khachHangView" source="KhachHangView.fxml"/>
                     </content>
                 </Tab>
 
-                <Tab text="Tab3">
+                <Tab text="DoanhThu">
                     <content>
-                        <fx:include fx:id="baoCaoView" source="BaoCaoView.fxml"/>
+                        <fx:include fx:id="DoanhThuView" source="DoanhThuView.fxml"/>
                     </content>
                 </Tab>
 
-                <Tab text="Tab4">
+                <Tab text="Ds HoaDon">
                     <content>
-                        <fx:include fx:id="lichSuHoaDonView" source="LichSuHoaDonView.fxml"/>
+                        <fx:include fx:id="BaoCaoHoaDon" source="LichSuHoaDonView.fxml"/>
                     </content>
                 </Tab>
             </tabs>

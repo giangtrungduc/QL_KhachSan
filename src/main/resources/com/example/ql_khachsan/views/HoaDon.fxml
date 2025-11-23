@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Line?>
+
+<VBox alignment="TOP_LEFT" prefHeight="600.0" prefWidth="645.0" spacing="10" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ql_khachsan.controllers.HoaDonController">
+
+    <padding>
+        <Insets bottom="20" left="20" right="20" top="20" />
+    </padding>
+
+    <Separator />
+
+    <Pane prefHeight="512.0" prefWidth="606.0">
+        <children>
+            <Label layoutX="224.0" prefHeight="50.0" prefWidth="157.0" style="-fx-font-weight: bold; -fx-font-size: 20;" text="FIVESTAR hotel" textAlignment="CENTER" />
+            <Label layoutX="1.0" layoutY="59.0" style="-fx-font-size: 12px;" text="Địa chỉ: 125 Phường Đống Đa, Quận Hà Đông, TP. Hà Nội " />
+            <Label layoutY="84.0" style="-fx-font-size: 12px;" text="Website: fivestar.vn" />
+            <Label layoutY="111.0" style="-fx-font-size: 12px;" text="SĐT: 0123456789" />
+
+            <Line endX="424.800048828125" endY="-1.52587890625E-5" layoutX="101.0" layoutY="139.0" startX="-22.399986267089844" startY="-1.52587890625E-5" />
+
+            <Label layoutX="191.0" layoutY="154.0" style="-fx-font-size: 16px; -fx-font-weight: bold;" text="HÓA ĐƠN THANH TOÁN" />
+            <Label fx:id="lblMaHD" layoutX="323.0" layoutY="179.0" text="Mã HĐ: " />
+            <Label fx:id="lblNgayLap" layoutX="433.0" layoutY="179.0" text="Ngày lập: " />
+
+            <Label fx:id="lblTenKhachHang" layoutX="17.0" layoutY="222.0" text="Khách hàng: " />
+            <Label fx:id="lblSDT" layoutX="21.0" layoutY="255.0" text="SĐT: ">
+            <padding>
+               <Insets left="-3.0" />
+            </padding></Label>
+            <Label fx:id="lblEmail" layoutX="17.0" layoutY="290.0" text="Email: " />
+
+            <Label fx:id="lblPhong" layoutX="23.0" layoutY="325.0" text="Phòng: ">
+            <padding>
+               <Insets left="-6.0" />
+            </padding></Label>
+            <Label fx:id="lblLoaiPhong" layoutX="18.0" layoutY="360.0" text="Loại phòng: ">
+            <padding>
+               <Insets left="-1.0" />
+            </padding></Label> <Label fx:id="lblDonGiaThucTe" layoutX="347.0" layoutY="360.0" text="Giá thực tế/đêm: " /> <Label fx:id="lblNgayNhan" layoutX="348.0" layoutY="255.0" text="Ngày nhận: " />
+            <Label fx:id="lblNgayTra" layoutX="345.0" layoutY="290.0" text="Ngày trả:">
+            <padding>
+               <Insets left="2.0" />
+            </padding></Label>
+            <Label fx:id="lblSoDem" layoutX="348.0" layoutY="325.0" text="Số đêm:" />
+
+            <Label layoutX="19.0" layoutY="439.0" style="-fx-font-weight: bold;" text="TỔNG CỘNG:">
+            <padding>
+               <Insets left="-2.0" />
+            </padding></Label>
+            <Label fx:id="lblTongTien" layoutX="448.0" layoutY="439.0" style="-fx-font-weight: bold;" text="0.00 VNĐ" />
+
+            <Label layoutX="11.0" layoutY="400.0" text="Tiền phòng (Giá thực tế * Số đêm):">
+            <padding>
+               <Insets left="6.0" />
+            </padding></Label>
+            <Label fx:id="lblTongTienPhong" layoutX="450.0" layoutY="400.0" text="0.00 VNĐ" />
+
+            <Label fx:id="lblGhiChu" layoutX="11.0" layoutY="468.0" text="Ghi chú: " />
+
+            <Line endX="424.0" endY="3.0517578125E-5" layoutX="100.0" layoutY="496.0" startX="-23.199974060058594" startY="3.0517578125E-5" />
+
+        </children>
+    </Pane>
+
+    <Button fx:id="btnExport" onAction="#handleExport" style="-fx-background-color: #E67E22; -fx-text-fill: white;" text="Xuất hóa đơn" />
+
+</VBox>

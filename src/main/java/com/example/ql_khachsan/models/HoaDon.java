@@ -1,65 +1,119 @@
 package com.example.ql_khachsan.models;
 
-import javafx.beans.property.ObjectProperty;
-import javafx.beans.property.SimpleObjectProperty;
-import javafx.beans.property.SimpleStringProperty;
-import javafx.beans.property.StringProperty;
+import javafx.beans.property.*;
 import java.time.LocalDateTime;
 
-/**
- * Model đại diện cho bảng HOADON
- */
 public class HoaDon {
-    // Thuộc tính đã chuyển đổi
+    private final IntegerProperty stt;
     private final StringProperty maHD;
+    private final StringProperty maDP;
     private final StringProperty ghiChu;
     private final ObjectProperty<LocalDateTime> ngayLap;
-    private final StringProperty maDP;
+    private final DoubleProperty tongTien;
 
-    /**
-     * Constructor rỗng
-     */
-    public HoaDon() {
-        this.maHD = new SimpleStringProperty();
-        this.ghiChu = new SimpleStringProperty();
-        this.ngayLap = new SimpleObjectProperty<>();
-        this.maDP = new SimpleStringProperty();
-    }
+    private final StringProperty tenKH;
 
-    /**
-     * Constructor đầy đủ
-     */
-    public HoaDon(String maHD, String ghiChu, LocalDateTime ngayLap, String maDP) {
+    // --- Bổ sung thông tin chi tiết (Lấy từ JOIN) ---
+    // Các trường này không cần Property vì chúng chỉ hiển thị chi tiết trong cửa sổ pop-up,
+    // không phải cột chính của TableView.
+    private String sdt;
+    private String email;
+    private String tenPhong;
+    private String tenLoai;
+    private double donGiaThucTe;
+    private LocalDateTime ngayNhan;
+    private LocalDateTime ngayTra;
+
+
+    // Constructor cơ bản cho TableView (Thêm tham số tenKhachHang)
+    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, double tongTien, String tenKH) {
+        this.stt = new SimpleIntegerProperty(stt);
         this.maHD = new SimpleStringProperty(maHD);
+        this.maDP = new SimpleStringProperty(maDP);
         this.ghiChu = new SimpleStringProperty(ghiChu);
         this.ngayLap = new SimpleObjectProperty<>(ngayLap);
-        this.maDP = new SimpleStringProperty(maDP);
+        this.tongTien = new SimpleDoubleProperty(tongTien);
+        this.tenKH = new SimpleStringProperty(tenKH);
     }
 
-    // --- Getters, Setters, và Properties (Mô hình chuẩn JavaFX) ---
+    // Constructor (Chỉ dùng cho Controller khi gọi DAO)
+    // Giữ nguyên constructor này nhưng cần đảm bảo các Property được khởi tạo
+    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, double tongTien) {
+        this(stt, maHD, maDP, ghiChu, ngayLap, tongTien, null); // Chuyển sang constructor đầy đủ
+    }
+
+    // Constructor rỗng (Dùng cho DAO)
+    public HoaDon() {
+        this.stt = new SimpleIntegerProperty();
+        this.maHD = new SimpleStringProperty();
+        this.maDP = new SimpleStringProperty();
+        this.ghiChu = new SimpleStringProperty();
+        this.ngayLap = new SimpleObjectProperty<>();
+        this.tongTien = new SimpleDoubleProperty();
+        this.tenKH = new SimpleStringProperty();
+
+        // Khởi tạo các trường chi tiết
+        this.sdt = null;
+        this.email = null;
+        this.tenPhong = null;
+        this.tenLoai = null;
+        this.donGiaThucTe = 0.0;
+        this.ngayNhan = null;
+        this.ngayTra = null;
+    }
+
+    // --- Getters và Setters cho các thuộc tính liên kết (PROPERTY) ---
+
+
+
+
+
+    // --- Getters và Setters cho các thuộc tính chi tiết (Non-Property) ---
+    // Loại bỏ trường 'private String tenKhachHang;' cũ (nếu có) để tránh nhầm lẫn
+
+    public String getTenKH() { return tenKH.get(); }
+    public void setTenKH(String tenKH) { this.tenKH.set(tenKH); }
+
+    public String getSdt() { return sdt; }
+    public void setSdt(String sdt) { this.sdt = sdt; }
+
+    public String getEmail() { return email; }
+    public void setEmail(String email) { this.email = email; }
+
+    public String getTenPhong() { return tenPhong; }
+    public void setTenPhong(String tenPhong) { this.tenPhong = tenPhong; }
+
+    public String getTenLoai() { return tenLoai; }
+    public void setTenLoai(String tenLoai) { this.tenLoai = tenLoai; }
+
+    public double getDonGiaThucTe() { return donGiaThucTe; }
+    public void setDonGiaThucTe(double donGiaThucTe) { this.donGiaThucTe = donGiaThucTe; }
+
+    public LocalDateTime getNgayNhan() { return ngayNhan; }
+    public void setNgayNhan(LocalDateTime ngayNhan) { this.ngayNhan = ngayNhan; }
+
+    public LocalDateTime getNgayTra() { return ngayTra; }
+    public void setNgayTra(LocalDateTime ngayTra) { this.ngayTra = ngayTra; }
+
+    // --- Getters và Property cho TableView (Khác) ---
+
+    public StringProperty tenKHProperty() { return tenKH; }
+
+    public int getStt() { return stt.get(); }
+    public IntegerProperty sttProperty() { return stt; }
 
     public String getMaHD() { return maHD.get(); }
-    public void setMaHD(String maHD) { this.maHD.set(maHD); }
     public StringProperty maHDProperty() { return maHD; }
 
+    public String getMaDP() { return maDP.get(); }
+    public StringProperty maDPProperty() { return maDP; }
+
     public String getGhiChu() { return ghiChu.get(); }
-    public void setGhiChu(String ghiChu) { this.ghiChu.set(ghiChu); }
     public StringProperty ghiChuProperty() { return ghiChu; }
 
     public LocalDateTime getNgayLap() { return ngayLap.get(); }
-    public void setNgayLap(LocalDateTime ngayLap) { this.ngayLap.set(ngayLap); }
     public ObjectProperty<LocalDateTime> ngayLapProperty() { return ngayLap; }
 
-    public String getMaDP() { return maDP.get(); }
-    public void setMaDP(String maDP) { this.maDP.set(maDP); }
-    public StringProperty maDPProperty() { return maDP; }
-
-    @Override
-    public String toString() {
-        return "HoaDon{" +
-                "maHD=" + maHD.get() +
-                ", ngayLap=" + ngayLap.get() +
-                ", maDP=" + maDP.get() +
-                '}';
-    }
+    public double getTongTien() { return tongTien.get(); }
+    public DoubleProperty tongTienProperty() { return tongTien; }
 }
