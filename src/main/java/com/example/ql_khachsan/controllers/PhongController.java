@@ -8,6 +8,8 @@ import com.example.ql_khachsan.models.PhongDetail;
 import com.example.ql_khachsan.untils.TrangThaiPhong;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -21,12 +23,11 @@ import java.util.ResourceBundle;
 
 public class PhongController implements Initializable {
 
-    // --- FXML Fields ---
     @FXML private TextField txtMaPhong;
     @FXML private TextField txtTenPhong;
     @FXML private TextField txtGiaPhong;
-    @FXML private TextField txtSoNguoi;     // Mới: Hiển thị số người
-    @FXML private TextField txtTimKiem;     // Mới: Ô tìm kiếm
+    @FXML private TextField txtSoNguoi;
+    @FXML private TextField txtTimKiem;
     @FXML private ComboBox<LoaiPhong> cbLoaiPhong;
     @FXML private ComboBox<TrangThaiPhong> cbTrangThai;
 
@@ -35,17 +36,14 @@ public class PhongController implements Initializable {
     @FXML private Button btnXoa;
     @FXML private Button btnLamMoi;
 
-    // --- TableView: Sử dụng PhongDetail ---
     @FXML private TableView<PhongDetail> tvPhong;
-
     @FXML private TableColumn<PhongDetail, String> colMaPhong;
     @FXML private TableColumn<PhongDetail, String> colTenPhong;
-    @FXML private TableColumn<PhongDetail, Integer> colSoNguoi; // Mới
+    @FXML private TableColumn<PhongDetail, Integer> colSoNguoi;
     @FXML private TableColumn<PhongDetail, String> colLoaiPhong;
     @FXML private TableColumn<PhongDetail, BigDecimal> colGiaPhong;
     @FXML private TableColumn<PhongDetail, TrangThaiPhong> colTrangThai;
 
-    // --- Data Fields ---
     private PhongDAO phongDAO;
     private LoaiPhongDAO loaiPhongDAO;
     private ObservableList<PhongDetail> danhSachPhong;
@@ -54,90 +52,62 @@ public class PhongController implements Initializable {
     public void initialize(URL location, ResourceBundle resources) {
         phongDAO = new PhongDAO();
         loaiPhongDAO = new LoaiPhongDAO();
-
-        // 1. Khởi tạo danh sách
         danhSachPhong = FXCollections.observableArrayList();
 
-        // 2. Load dữ liệu gốc từ DB
         loadData();
 
-        // --- [CHỨC NĂNG TÌM KIẾM] ---
-        // Tạo FilteredList bao lấy danh sách gốc
-        javafx.collections.transformation.FilteredList<PhongDetail> filteredData =
-                new javafx.collections.transformation.FilteredList<>(danhSachPhong, p -> true);
+        FilteredList<PhongDetail> filteredData = new FilteredList<>(danhSachPhong, p -> true);
 
-        // Bắt sự kiện khi gõ vào ô tìm kiếm
         txtTimKiem.textProperty().addListener((observable, oldValue, newValue) -> {
             filteredData.setPredicate(phong -> {
                 if (newValue == null || newValue.isEmpty()) {
                     return true;
                 }
-
                 String lowerCaseFilter = newValue.toLowerCase();
-
-                // Tìm theo Mã, Tên phòng, hoặc Tên loại
                 if (phong.getMaPhong().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
                 } else if (phong.getTenPhong().toLowerCase().contains(lowerCaseFilter)) {
                     return true;
-                } else if (phong.getTenLoai().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                }
-                return false;
+                } else return phong.getTenLoai().toLowerCase().contains(lowerCaseFilter);
             });
         });
 
-        // Bao lại bằng SortedList để sắp xếp được
-        javafx.collections.transformation.SortedList<PhongDetail> sortedData =
-                new javafx.collections.transformation.SortedList<>(filteredData);
+        SortedList<PhongDetail> sortedData = new SortedList<>(filteredData);
         sortedData.comparatorProperty().bind(tvPhong.comparatorProperty());
-
-        // Gán dữ liệu đã lọc vào bảng
         tvPhong.setItems(sortedData);
-        // --- [KẾT THÚC TÌM KIẾM] ---
 
-        // Cấu hình TextField không cho sửa thủ công
         txtMaPhong.setEditable(false);
         txtSoNguoi.setEditable(false);
 
-        // --- [AUTO FILL MÃ PHÒNG] ---
         txtTenPhong.textProperty().addListener((observable, oldValue, newValue) -> {
-            // Chỉ tự động điền khi đang THÊM MỚI (không bị disable)
             if (!txtMaPhong.isDisabled()) {
                 if (newValue != null) {
-                    // Lấy số từ tên phòng (VD: "Phòng 101" -> "101")
                     String chiLaySo = newValue.replaceAll("[^0-9]", "");
                     txtMaPhong.setText("P" + chiLaySo);
                 }
             }
         });
 
-        // --- [AUTO FILL GIÁ & SỐ NGƯỜI KHI CHỌN LOẠI PHÒNG] ---
         cbLoaiPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                // Điền Giá
                 if (newVal.getDonGia() != null) {
                     txtGiaPhong.setText(newVal.getDonGia().toPlainString());
                 }
-                // Điền Số người
                 txtSoNguoi.setText(String.valueOf(newVal.getSoNguoiTD()));
             }
         });
 
-        // 3. Setup UI ComboBox
         cbTrangThai.setItems(FXCollections.observableArrayList(TrangThaiPhong.values()));
         cbLoaiPhong.setItems(FXCollections.observableArrayList(loaiPhongDAO.getAll()));
 
         setupTableColumns();
 
-        // 4. Sự kiện click bảng
         tvPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
                 fillForm(newVal);
             }
         });
 
-        // 5. Button actions
         btnThem.setOnAction(e -> themPhong());
         btnSua.setOnAction(e -> suaPhong());
         btnXoa.setOnAction(e -> xoaPhong());
@@ -145,7 +115,6 @@ public class PhongController implements Initializable {
     }
 
     private void loadData() {
-        // Lấy dữ liệu PhongDetail từ DAO
         danhSachPhong.setAll(phongDAO.getAll());
     }
 
@@ -156,7 +125,7 @@ public class PhongController implements Initializable {
         colLoaiPhong.setCellValueFactory(cell -> cell.getValue().tenLoaiProperty());
 
         colGiaPhong.setCellValueFactory(cell -> cell.getValue().donGiaProperty());
-        colGiaPhong.setCellFactory(column -> new TableCell<PhongDetail, BigDecimal>() {
+        colGiaPhong.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
                 super.updateItem(item, empty);
@@ -171,8 +140,6 @@ public class PhongController implements Initializable {
 
         colTrangThai.setCellValueFactory(cell -> cell.getValue().trangThaiProperty());
     }
-
-    // --- CRUD Operations ---
 
     private void themPhong() {
         if (!validateInput()) return;
@@ -251,12 +218,11 @@ public class PhongController implements Initializable {
 
     private void fillForm(PhongDetail p) {
         txtMaPhong.setText(p.getMaPhong());
-        txtMaPhong.setDisable(true); // Không cho sửa mã
+        txtMaPhong.setDisable(true);
         txtTenPhong.setText(p.getTenPhong());
         txtSoNguoi.setText(String.valueOf(p.getSoNguoiTD()));
         cbTrangThai.setValue(p.getTrangThai());
 
-        // Logic chọn lại ComboBox theo Mã Loại
         String maLoaiCanTim = p.getMaLoai();
         if (maLoaiCanTim != null) {
             for (LoaiPhong lp : cbLoaiPhong.getItems()) {
@@ -267,7 +233,6 @@ public class PhongController implements Initializable {
             }
         }
 
-        // Điền giá (lấy từ DB hoặc ghi đè nếu cần)
         if (p.getDonGia() != null) {
             txtGiaPhong.setText(p.getDonGia().toPlainString());
         }
@@ -275,7 +240,7 @@ public class PhongController implements Initializable {
 
     private void lamMoiForm() {
         txtMaPhong.clear();
-        txtMaPhong.setDisable(false); // Cho phép nhập lại mã
+        txtMaPhong.setDisable(false);
         txtTenPhong.clear();
         txtGiaPhong.clear();
         txtSoNguoi.clear();

@@ -4,23 +4,16 @@ import com.example.ql_khachsan.untils.TrangThaiPhong;
 import javafx.beans.property.*;
 import java.math.BigDecimal;
 
-/**
- * DTO (ViewModel) chứa thông tin JOIN từ PHONG và LOAIPHONG.
- * Dùng để hiển thị lên giao diện JavaFX.
- */
 public class PhongDetail {
-    // Thuộc tính từ PHONG
     private final StringProperty maPhong;
     private final StringProperty tenPhong;
     private final ObjectProperty<TrangThaiPhong> trangThai;
 
-    // Thuộc tính từ LOAIPHONG
     private final StringProperty maLoai;
     private final StringProperty tenLoai;
     private final IntegerProperty soNguoiTD;
     private final ObjectProperty<BigDecimal> donGia;
 
-    // Constructor mặc định
     public PhongDetail() {
         this.maPhong = new SimpleStringProperty();
         this.tenPhong = new SimpleStringProperty();
@@ -30,8 +23,6 @@ public class PhongDetail {
         this.soNguoiTD = new SimpleIntegerProperty();
         this.donGia = new SimpleObjectProperty<>();
     }
-
-    // --- Getters, Setters, và Properties ---
 
     public String getMaPhong() { return maPhong.get(); }
     public void setMaPhong(String maPhong) { this.maPhong.set(maPhong); }

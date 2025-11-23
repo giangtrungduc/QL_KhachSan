@@ -12,6 +12,8 @@ module com.example.ql_khachsan {
     requires com.almasb.fxgl.all;
     requires com.zaxxer.hikari;
     requires java.sql;
+    requires java.desktop;
+    requires javafx.swing;
 
     opens com.example.ql_khachsan to javafx.fxml;
     opens com.example.ql_khachsan.controllers to javafx.fxml;

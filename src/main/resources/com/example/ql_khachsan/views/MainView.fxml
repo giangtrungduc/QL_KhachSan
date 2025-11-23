@@ -1,44 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.lang.*?>
-<?import java.util.*?>
-<?import javafx.scene.*?>
-<?import javafx.scene.control.*?>
-<?import javafx.scene.layout.*?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Tab?>
+<?import javafx.scene.control.TabPane?>
+<?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Pane?>
+<?import javafx.scene.layout.StackPane?>
 
-<?import javafx.scene.text.Font?>
-<BorderPane xmlns="http://javafx.com/javafx"
-            xmlns:fx="http://javafx.com/fxml"
-            fx:controller="com.example.ql_khachsan.controllers.MainController"
-            prefHeight="768.0" prefWidth="1024.0">
+<BorderPane prefHeight="768.0" prefWidth="1024.0" stylesheets="@../css/MainStyles.css" xmlns="http://javafx.com/javafx/24.0.1" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ql_khachsan.controllers.MainController">
+
+    <top>
+        <HBox alignment="CENTER_LEFT" styleClass="top-bar">
+            <Label styleClass="app-title" text="QUẢN LÝ KHÁCH SẠN FIVE STAR" />
+            <Pane HBox.hgrow="ALWAYS" />
+            <Label styleClass="user-info" text="Xin chào, Admin" />
+        </HBox>
+    </top>
+
     <center>
-        <TabPane fx:id="mainTable" tabClosingPolicy="UNAVAILABLE" BorderPane.alignment="CENTER">
-            <tabs>
-                <Tab text="Tab1">
-                    <content>
-                        <fx:include fx:id="phongView" source="PhongView.fxml"/>
-                    </content>
-                </Tab>
+        <StackPane styleClass="content-area">
+            <TabPane fx:id="mainTable" styleClass="main-tab-pane" tabClosingPolicy="UNAVAILABLE">
+                <tabs>
+                    <Tab text="QUẢN LÝ PHÒNG">
+                        <content>
+                            <fx:include fx:id="phongView" source="PhongView.fxml" />
+                        </content>
+                    </Tab>
 
-                <Tab text="Tab2">
-                    <content>
-                        <fx:include fx:id="khachHangView" source="KhachHangView.fxml"/>
-                    </content>
-                </Tab>
+                    <Tab text="QUẢN LÝ KHÁCH HÀNG">
+                        <content>
+                            <fx:include fx:id="khachHangView" source="KhachHangView.fxml" />
+                        </content>
+                    </Tab>
 
-                <Tab text="Tab3">
-                    <content>
-                        <fx:include fx:id="baoCaoView" source="BaoCaoView.fxml"/>
-                    </content>
-                </Tab>
+                    <Tab text="LỊCH SỬ HÓA ĐƠN">
+                        <content>
+                            <fx:include fx:id="lichSuHoaDonView" source="LichSuHoaDonView.fxml" />
+                        </content>
+                    </Tab>
 
-                <Tab text="Tab4">
-                    <content>
-                        <fx:include fx:id="lichSuHoaDonView" source="LichSuHoaDonView.fxml"/>
-                    </content>
-                </Tab>
-            </tabs>
-        </TabPane>
+                    <Tab text="BÁO CÁO THỐNG KÊ">
+                        <content>
+                            <fx:include fx:id="baoCaoView" source="BaoCaoView.fxml" />
+                        </content>
+                    </Tab>
+                </tabs>
+            </TabPane>
+        </StackPane>
     </center>
-
 </BorderPane>

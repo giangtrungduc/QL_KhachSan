@@ -1,0 +1,23 @@
+.header-title {
+    -fx-text-fill: #2c3e50;
+}
+.filter-box {
+    -fx-background-color: #f8f9fa;
+    -fx-border-color: #dee2e6;
+    -fx-border-radius: 4;
+}
+.btn-filter {
+    -fx-background-color: #3498db;
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+}
+.btn-detail {
+    -fx-background-color: #1abc9c;
+    -fx-text-fill: white;
+    -fx-font-size: 11px;
+    -fx-padding: 3 8;
+}
+.table-view .column-header {
+    -fx-background-color: #ecf0f1;
+    -fx-font-weight: bold;
+}

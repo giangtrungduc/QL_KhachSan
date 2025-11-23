@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 
 public class KhachHangController {
 
-    // ========== TABLE ==========
     @FXML private TableView<KhachHang> tblKhachHang;
     @FXML private TableColumn<KhachHang, String> colMaKH;
     @FXML private TableColumn<KhachHang, String> colHoTen;
@@ -23,7 +22,6 @@ public class KhachHangController {
     @FXML private TableColumn<KhachHang, String> colEmail;
     @FXML private TableColumn<KhachHang, String> colTaiKhoan;
 
-    // ========== FORM ==========
     @FXML private TextField txtMaKH;
     @FXML private TextField txtHoTen;
     @FXML private TextField txtCCCD;
@@ -31,19 +29,16 @@ public class KhachHangController {
     @FXML private TextField txtEmail;
     @FXML private TextField txtTaiKhoan;
 
-    // --- MẬT KHẨU + NÚT MẮT ---
-    @FXML private PasswordField txtMatKhau;          // ô mật khẩu ẩn
-    @FXML private TextField txtMatKhauVisible;       // ô mật khẩu hiện
-    @FXML private Button btnTogglePassword;          // nút 👁
-    private boolean passwordVisible = false;         // >>> NEW
+    @FXML private PasswordField txtMatKhau;
+    @FXML private TextField txtMatKhauVisible;
+    @FXML private Button btnTogglePassword;
+    private boolean passwordVisible = false;
 
-    // ========== SEARCH ==========
     @FXML private TextField txtSearch;
 
     private final KhachHangDAO khachHangDAO = new KhachHangDAO();
     private final ObservableList<KhachHang> khachHangList = FXCollections.observableArrayList();
 
-    // ================= INIT =================
     @FXML
     public void initialize() {
         colMaKH.setCellValueFactory(cell -> cell.getValue().maKHProperty());
@@ -53,15 +48,16 @@ public class KhachHangController {
         colEmail.setCellValueFactory(cell -> cell.getValue().emailProperty());
         colTaiKhoan.setCellValueFactory(cell -> cell.getValue().taiKhoanProperty());
 
-        setupPasswordField();          // >>> NEW
+        setupPasswordField();
         loadData();
 
         tblKhachHang.getSelectionModel().selectedItemProperty().addListener(
                 (obs, oldSel, newSel) -> showKhachHangDetails(newSel)
         );
+
+        txtSearch.textProperty().addListener((observable, oldValue, newValue) -> handleSearch());
     }
 
-    // >>> NEW – cấu hình trạng thái ban đầu của 2 ô mật khẩu
     private void setupPasswordField() {
         passwordVisible = false;
         txtMatKhauVisible.setVisible(false);
@@ -75,7 +71,6 @@ public class KhachHangController {
         }
     }
 
-    // ================= DATA =================
     private void loadData() {
         List<KhachHang> list = khachHangDAO.getAll();
         khachHangList.setAll(list);
@@ -94,7 +89,6 @@ public class KhachHangController {
         txtEmail.setText(kh.getEmail());
         txtTaiKhoan.setText(kh.getTaiKhoan());
 
-        // >>> NEW – đồng bộ 2 ô mật khẩu
         txtMatKhau.setText(kh.getMatKhau());
         txtMatKhauVisible.setText(kh.getMatKhau());
     }
@@ -110,18 +104,14 @@ public class KhachHangController {
         txtMatKhauVisible.clear();
 
         tblKhachHang.getSelectionModel().clearSelection();
-        setupPasswordField();          // >>> NEW
+        setupPasswordField();
     }
 
-    // Helper lấy mật khẩu hiện tại (dù đang ẩn hay hiện)
-    // >>> NEW
     private String getCurrentPassword() {
         return passwordVisible
                 ? txtMatKhauVisible.getText().trim()
                 : txtMatKhau.getText().trim();
     }
-
-    // ================== BUTTONS ==================
 
     @FXML
     private void handleAdd() {
@@ -134,7 +124,7 @@ public class KhachHangController {
                 txtSDT.getText().trim(),
                 txtEmail.getText().trim(),
                 txtTaiKhoan.getText().trim(),
-                getCurrentPassword()                  // >>> NEW
+                getCurrentPassword()
         );
 
         try {
@@ -144,7 +134,7 @@ public class KhachHangController {
                 loadData();
                 clearForm();
             } else {
-                showAlert(Alert.AlertType.ERROR, "Lỗi", null, "Không thể thêm khách hàng.");
+                showAlert(Alert.AlertType.ERROR, "Lỗi", null, "Không thể thêm khách hàng (Trùng mã hoặc lỗi CSDL).");
             }
         } catch (SQLException e) {
             e.printStackTrace();
@@ -166,12 +156,13 @@ public class KhachHangController {
         selected.setSdt(txtSDT.getText().trim());
         selected.setEmail(txtEmail.getText().trim());
         selected.setTaiKhoan(txtTaiKhoan.getText().trim());
-        selected.setMatKhau(getCurrentPassword());   // >>> NEW
+        selected.setMatKhau(getCurrentPassword());
 
         boolean ok = khachHangDAO.update(selected);
         if (ok) {
             showAlert(Alert.AlertType.INFORMATION, "Thành công", null, "Đã cập nhật khách hàng.");
             loadData();
+            tblKhachHang.refresh();
         } else {
             showAlert(Alert.AlertType.ERROR, "Lỗi", null, "Không thể cập nhật khách hàng.");
         }
@@ -227,19 +218,13 @@ public class KhachHangController {
     @FXML
     private void handleRefresh() {
         txtSearch.clear();
+        clearForm();
         loadData();
     }
 
     @FXML
-    private void handleClearForm() {
-        clearForm();
-    }
-
-    // ================== NÚT MẮT ==================
-    @FXML
     private void togglePassword() {
         if (passwordVisible) {
-            // đang hiện -> ẩn
             txtMatKhauVisible.setVisible(false);
             txtMatKhauVisible.setManaged(false);
 
@@ -250,7 +235,6 @@ public class KhachHangController {
             btnTogglePassword.setText("👁");
             passwordVisible = false;
         } else {
-            // đang ẩn -> hiện
             txtMatKhauVisible.setText(txtMatKhau.getText());
             txtMatKhauVisible.setVisible(true);
             txtMatKhauVisible.setManaged(true);
@@ -263,7 +247,6 @@ public class KhachHangController {
         }
     }
 
-    // ================== VALIDATE + ALERT ==================
     private boolean validateInput(boolean isAdd) {
         StringBuilder err = new StringBuilder();
         if (isAdd && txtMaKH.getText().trim().isEmpty())

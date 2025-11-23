@@ -1,8 +1,7 @@
 package com.example.ql_khachsan.dao;
 
-// Sửa: Import lớp Connection Pool của bạn
-import com.example.ql_khachsan.untils.DatabaseConnection;
 import com.example.ql_khachsan.models.LoaiPhong;
+import com.example.ql_khachsan.untils.DatabaseConnection;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -13,9 +12,6 @@ import java.util.List;
 
 public class LoaiPhongDAO {
 
-    /**
-     * Lấy tất cả các loại phòng
-     */
     public List<LoaiPhong> getAll() {
         List<LoaiPhong> list = new ArrayList<>();
         String sql = "SELECT * FROM LOAIPHONG";
@@ -32,20 +28,14 @@ public class LoaiPhongDAO {
                 lp.setDonGia(rs.getBigDecimal("DonGia"));
                 list.add(lp);
             }
-
         } catch (SQLException e) {
             e.printStackTrace();
         }
         return list;
     }
 
-    /**
-     * Thêm mới một loại phòng
-     */
     public boolean insert(LoaiPhong lp) {
         String sql = "INSERT INTO LOAIPHONG(MaLoai, TenLoai, SoNguoiTD, DonGia) VALUES (?, ?, ?, ?)";
-
-        // Sửa: Dùng Connection Pool
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -55,19 +45,14 @@ public class LoaiPhongDAO {
             ps.setBigDecimal(4, lp.getDonGia());
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /**
-     * Cập nhật một loại phòng (Thêm)
-     */
     public boolean update(LoaiPhong lp) {
         String sql = "UPDATE LOAIPHONG SET TenLoai = ?, SoNguoiTD = ?, DonGia = ? WHERE MaLoai = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
@@ -77,28 +62,20 @@ public class LoaiPhongDAO {
             ps.setString(4, lp.getMaLoai());
 
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
             e.printStackTrace();
             return false;
         }
     }
 
-    /**
-     * Xóa một loại phòng (Thêm)
-     */
     public boolean delete(String maLoai) {
         String sql = "DELETE FROM LOAIPHONG WHERE MaLoai = ?";
-
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
             ps.setString(1, maLoai);
             return ps.executeUpdate() > 0;
-
         } catch (SQLException e) {
-            // Lỗi này thường xảy ra khi cố xóa 1 Loại phòng
-            // mà vẫn còn Phòng (PHONG) đang tham chiếu đến nó.
             e.printStackTrace();
             return false;
         }

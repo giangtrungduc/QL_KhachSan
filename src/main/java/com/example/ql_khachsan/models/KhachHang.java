@@ -13,7 +13,6 @@ public class KhachHang {
     private final StringProperty taiKhoan;
     private final StringProperty matKhau;
 
-    // Constructor rỗng
     public KhachHang() {
         this.maKH = new SimpleStringProperty();
         this.hoTen = new SimpleStringProperty();
@@ -24,9 +23,7 @@ public class KhachHang {
         this.matKhau = new SimpleStringProperty();
     }
 
-    // Constructor đầy đủ
-    public KhachHang(String maKH, String hoTen, String cccd, String sdt,
-                     String email, String taiKhoan, String matKhau) {
+    public KhachHang(String maKH, String hoTen, String cccd, String sdt, String email, String taiKhoan, String matKhau) {
         this.maKH = new SimpleStringProperty(maKH);
         this.hoTen = new SimpleStringProperty(hoTen);
         this.cccd = new SimpleStringProperty(cccd);
@@ -35,8 +32,6 @@ public class KhachHang {
         this.taiKhoan = new SimpleStringProperty(taiKhoan);
         this.matKhau = new SimpleStringProperty(matKhau);
     }
-
-    // --- Getters, Setters và Properties ---
 
     public String getMaKH() { return maKH.get(); }
     public void setMaKH(String maKH) { this.maKH.set(maKH); }
@@ -66,7 +61,6 @@ public class KhachHang {
     public void setMatKhau(String matKhau) { this.matKhau.set(matKhau); }
     public StringProperty matKhauProperty() { return matKhau; }
 
-    // --- equals, hashCode, toString (Giữ nguyên) ---
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -82,6 +76,6 @@ public class KhachHang {
 
     @Override
     public String toString() {
-        return "KhachHang{" + "maKH=" + maKH.get() + ", hoTen=" + hoTen.get() + '}';
+        return hoTen.get();
     }
 }
