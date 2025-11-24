@@ -12,6 +12,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhongDAO {
+    private Phong mapResultSetToPhong(ResultSet rs) throws SQLException {
+        Phong phong = new Phong();
+        phong.setMaPhong(rs.getString("MaPhong"));
+        phong.setTenPhong(rs.getString("TenPhong"));
+        phong.setTrangThai(TrangThaiPhong.fromDbValue(rs.getString("TrangThai")));
+        phong.setMaLoai(rs.getString("MaLoai"));
+        return phong;
+    }
 
     private PhongDetail mapResultSetToPhongDetail(ResultSet rs) throws SQLException {
         PhongDetail phongDetail = new PhongDetail();
@@ -122,5 +130,49 @@ public class PhongDAO {
             e.printStackTrace();
         }
         return availableRooms;
+    }
+
+    public List<PhongDetail> searchAdvanced(String keyword, TrangThaiPhong status, String maLoai) {
+        List<PhongDetail> list = new ArrayList<>();
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
+                        "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
+                        "FROM PHONG p JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
+                        "WHERE (p.MaPhong LIKE ? OR p.TenPhong LIKE ?) ");
+
+        if (status != null) {
+            sql.append(" AND p.TrangThai = ?");
+        }
+
+        if (maLoai != null && !maLoai.isEmpty()) {
+            sql.append(" AND p.MaLoai = ?");
+        }
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
+
+            // Thiết lập tham số cho Từ khóa
+            String searchPattern = "%" + keyword + "%";
+            int paramIndex = 1;
+            ps.setString(paramIndex++, searchPattern);
+            ps.setString(paramIndex++, searchPattern);
+
+            // Thiết lập tham số cho Trạng thái (nếu có)
+            if (status != null) {
+                ps.setString(paramIndex++, status.getDbValue());
+            }
+
+            // Thiết lập tham số cho Loại phòng (nếu có)
+            if (maLoai != null && !maLoai.isEmpty()) {
+                ps.setString(paramIndex++, maLoai);
+            }
+
+            ResultSet rs = ps.executeQuery();
+            while (rs.next()) {
+                list.add(mapResultSetToPhongDetail(rs));
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return list;
     }
 }

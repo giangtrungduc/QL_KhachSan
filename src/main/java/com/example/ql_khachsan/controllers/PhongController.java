@@ -6,6 +6,7 @@ import com.example.ql_khachsan.models.LoaiPhong;
 import com.example.ql_khachsan.models.Phong;
 import com.example.ql_khachsan.models.PhongDetail;
 import com.example.ql_khachsan.untils.TrangThaiPhong;
+import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -17,13 +18,16 @@ import javafx.scene.control.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
 
 public class PhongController implements Initializable {
 
-    @FXML private TextField txtMaPhong;
+    // --- FXML Fields ---
+    @FXML private ComboBox<TrangThaiPhong> cbLocTrangThai;
+    @FXML private ComboBox<LoaiPhong> cbLocLoaiPhong;
     @FXML private TextField txtTenPhong;
     @FXML private TextField txtGiaPhong;
     @FXML private TextField txtSoNguoi;
@@ -36,7 +40,10 @@ public class PhongController implements Initializable {
     @FXML private Button btnXoa;
     @FXML private Button btnLamMoi;
 
+    // --- TableView ---
     @FXML private TableView<PhongDetail> tvPhong;
+
+    @FXML private TableColumn<PhongDetail, Integer> colSTT;
     @FXML private TableColumn<PhongDetail, String> colMaPhong;
     @FXML private TableColumn<PhongDetail, String> colTenPhong;
     @FXML private TableColumn<PhongDetail, Integer> colSoNguoi;
@@ -48,51 +55,47 @@ public class PhongController implements Initializable {
     private LoaiPhongDAO loaiPhongDAO;
     private ObservableList<PhongDetail> danhSachPhong;
 
+    private String maPhongDangChon = null;
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         phongDAO = new PhongDAO();
         loaiPhongDAO = new LoaiPhongDAO();
         danhSachPhong = FXCollections.observableArrayList();
 
+        tvPhong.setItems(danhSachPhong);
+
         loadData();
 
-        FilteredList<PhongDetail> filteredData = new FilteredList<>(danhSachPhong, p -> true);
+        // --- 1. SETUP BỘ LỌC TRẠNG THÁI (Thêm mục "Tất cả") ---
+        ObservableList<TrangThaiPhong> listTrangThai = FXCollections.observableArrayList(TrangThaiPhong.values());
+        listTrangThai.add(0, null);
+        cbLocTrangThai.setItems(listTrangThai);
+        setupComboBoxPlaceholder(cbLocTrangThai, "Tất cả trạng thái");
 
-        txtTimKiem.textProperty().addListener((observable, oldValue, newValue) -> {
-            filteredData.setPredicate(phong -> {
-                if (newValue == null || newValue.isEmpty()) {
-                    return true;
-                }
-                String lowerCaseFilter = newValue.toLowerCase();
-                if (phong.getMaPhong().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else if (phong.getTenPhong().toLowerCase().contains(lowerCaseFilter)) {
-                    return true;
-                } else return phong.getTenLoai().toLowerCase().contains(lowerCaseFilter);
-            });
-        });
+        // --- 2. SETUP BỘ LỌC LOẠI PHÒNG (Thêm mục "Tất cả") ---
+        List<LoaiPhong> listLoai = loaiPhongDAO.getAll();
+        ObservableList<LoaiPhong> listLocLoai = FXCollections.observableArrayList(listLoai);
+        listLocLoai.add(0, null);
+        cbLocLoaiPhong.setItems(listLocLoai);
+        setupComboBoxPlaceholder(cbLocLoaiPhong, "Tất cả loại phòng");
 
-        SortedList<PhongDetail> sortedData = new SortedList<>(filteredData);
-        sortedData.comparatorProperty().bind(tvPhong.comparatorProperty());
-        tvPhong.setItems(sortedData);
+        // --- 3. BẮT SỰ KIỆN TÌM KIẾM (ĐÃ SỬA GỌN) ---
+        // Cả 3 ô này khi thay đổi đều gọi chung 1 hàm thucHienTimKiem
+        txtTimKiem.textProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
+        cbLocTrangThai.valueProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
+        cbLocLoaiPhong.valueProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
 
-        txtMaPhong.setEditable(false);
+        // --- 4. TÔ MÀU BẢNG ---
+        setupRowColor();
+
+        // --- SETUP UI AUTO FILL ---
         txtSoNguoi.setEditable(false);
-
-        txtTenPhong.textProperty().addListener((observable, oldValue, newValue) -> {
-            if (!txtMaPhong.isDisabled()) {
-                if (newValue != null) {
-                    String chiLaySo = newValue.replaceAll("[^0-9]", "");
-                    txtMaPhong.setText("P" + chiLaySo);
-                }
-            }
-        });
+        txtGiaPhong.setEditable(false);
 
         cbLoaiPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                if (newVal.getDonGia() != null) {
-                    txtGiaPhong.setText(newVal.getDonGia().toPlainString());
-                }
+                if (newVal.getDonGia() != null) txtGiaPhong.setText(newVal.getDonGia().toPlainString());
                 txtSoNguoi.setText(String.valueOf(newVal.getSoNguoiTD()));
             }
         });
@@ -103,22 +106,39 @@ public class PhongController implements Initializable {
         setupTableColumns();
 
         tvPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
-            if (newVal != null) {
-                fillForm(newVal);
-            }
+            if (newVal != null) fillForm(newVal);
         });
 
         btnThem.setOnAction(e -> themPhong());
         btnSua.setOnAction(e -> suaPhong());
         btnXoa.setOnAction(e -> xoaPhong());
         btnLamMoi.setOnAction(e -> lamMoiForm());
+
+        lamMoiForm();
     }
 
     private void loadData() {
         danhSachPhong.setAll(phongDAO.getAll());
     }
 
+    // --- HÀM TÌM KIẾM CHÍNH (THAY THẾ CHO timKiemTuDB CŨ) ---
+    private void thucHienTimKiem() {
+        String tuKhoa = txtTimKiem.getText() == null ? "" : txtTimKiem.getText().trim();
+        TrangThaiPhong trangThai = cbLocTrangThai.getValue();
+
+        String maLoai = null;
+        if (cbLocLoaiPhong.getValue() != null) {
+            maLoai = cbLocLoaiPhong.getValue().getMaLoai();
+        }
+
+        // [QUAN TRỌNG] Bạn nhớ phải có hàm searchAdvanced bên PhongDAO nhé!
+        danhSachPhong.setAll(phongDAO.searchAdvanced(tuKhoa, trangThai, maLoai));
+    }
+
     private void setupTableColumns() {
+        colSTT.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(tvPhong.getItems().indexOf(column.getValue()) + 1));
+        colSTT.setSortable(false);
+
         colMaPhong.setCellValueFactory(cell -> cell.getValue().maPhongProperty());
         colTenPhong.setCellValueFactory(cell -> cell.getValue().tenPhongProperty());
         colSoNguoi.setCellValueFactory(cell -> cell.getValue().soNguoiTDProperty().asObject());
@@ -129,54 +149,83 @@ public class PhongController implements Initializable {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
                 super.updateItem(item, empty);
-                if (empty || item == null) {
-                    setText(null);
-                } else {
-                    NumberFormat vnFormat = NumberFormat.getCurrencyInstance(new Locale("vi", "VN"));
-                    setText(vnFormat.format(item));
-                }
+                if (empty || item == null) setText(null);
+                else setText(NumberFormat.getCurrencyInstance(new Locale("vi", "VN")).format(item));
             }
         });
 
         colTrangThai.setCellValueFactory(cell -> cell.getValue().trangThaiProperty());
     }
 
+    // --- TÔ MÀU DÒNG (ĐÃ BỎ PHẦN BẢO TRÌ) ---
+    private void setupRowColor() {
+        tvPhong.setRowFactory(tv -> new TableRow<PhongDetail>() {
+            @Override
+            protected void updateItem(PhongDetail item, boolean empty) {
+                super.updateItem(item, empty);
+                setStyle("");
+
+                if (item == null || empty) {
+                    return;
+                }
+
+                TrangThaiPhong status = item.getTrangThai();
+
+                if (status == TrangThaiPhong.TRONG) {
+                    // Màu xanh nhạt
+                    setStyle("-fx-background-color: #d4edda;");
+                } else if (status == TrangThaiPhong.DA_DAT) {
+                    // Màu vàng nhạt
+                    setStyle("-fx-background-color: #fff3cd;");
+                } else if (status == TrangThaiPhong.DANG_SU_DUNG) {
+                    // Màu đỏ nhạt
+                    setStyle("-fx-background-color: #f8d7da;");
+                }
+            }
+        });
+    }
+
+    // ... (GIỮ NGUYÊN CÁC HÀM CRUD VÀ HELPER PHÍA DƯỚI CỦA BẠN) ...
+
     private void themPhong() {
         if (!validateInput()) return;
         try {
             Phong p = new Phong();
-            p.setMaPhong(txtMaPhong.getText());
-            p.setTenPhong(txtTenPhong.getText());
+            String tenPhong = txtTenPhong.getText();
+            String soPhong = tenPhong.replaceAll("[^0-9]", "");
+            if (soPhong.isEmpty()) {
+                thongBao("Lỗi", "Tên phòng phải chứa số (VD: Phòng 101)", Alert.AlertType.ERROR);
+                return;
+            }
+            p.setMaPhong("P" + soPhong);
+            p.setTenPhong(tenPhong);
 
             if (cbLoaiPhong.getValue() != null) {
                 p.setMaLoai(cbLoaiPhong.getValue().getMaLoai());
             }
-            p.setTrangThai(cbTrangThai.getValue());
+            p.setTrangThai(TrangThaiPhong.TRONG);
 
             if (phongDAO.insert(p)) {
-                thongBao("Thành công", "Thêm phòng mới thành công!", Alert.AlertType.INFORMATION);
+                thongBao("Thành công", "Thêm phòng thành công!", Alert.AlertType.INFORMATION);
                 loadData();
                 lamMoiForm();
             } else {
-                thongBao("Thất bại", "Không thể thêm phòng (Có thể trùng Mã phòng?)", Alert.AlertType.ERROR);
+                thongBao("Thất bại", "Mã phòng đã tồn tại!", Alert.AlertType.ERROR);
             }
         } catch (Exception e) {
-            thongBao("Lỗi", "Dữ liệu không hợp lệ: " + e.getMessage(), Alert.AlertType.ERROR);
+            thongBao("Lỗi", "Lỗi: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
     private void suaPhong() {
-        PhongDetail selected = tvPhong.getSelectionModel().getSelectedItem();
-        if (selected == null) {
+        if (maPhongDangChon == null) {
             thongBao("Chú ý", "Vui lòng chọn phòng cần sửa", Alert.AlertType.WARNING);
             return;
         }
-
         if (!validateInput()) return;
-
         try {
             Phong p = new Phong();
-            p.setMaPhong(selected.getMaPhong());
+            p.setMaPhong(maPhongDangChon);
             p.setTenPhong(txtTenPhong.getText());
             if (cbLoaiPhong.getValue() != null) {
                 p.setMaLoai(cbLoaiPhong.getValue().getMaLoai());
@@ -186,6 +235,7 @@ public class PhongController implements Initializable {
             if (phongDAO.update(p)) {
                 thongBao("Thành công", "Cập nhật thành công!", Alert.AlertType.INFORMATION);
                 loadData();
+                lamMoiForm();
             } else {
                 thongBao("Lỗi", "Cập nhật thất bại!", Alert.AlertType.ERROR);
             }
@@ -195,18 +245,24 @@ public class PhongController implements Initializable {
     }
 
     private void xoaPhong() {
-        PhongDetail selected = tvPhong.getSelectionModel().getSelectedItem();
-        if (selected == null) {
+        if (maPhongDangChon == null) {
             thongBao("Chú ý", "Vui lòng chọn phòng cần xóa", Alert.AlertType.WARNING);
+            return;
+        }
+        PhongDetail selected = tvPhong.getSelectionModel().getSelectedItem();
+        if (selected.getTrangThai() == TrangThaiPhong.DA_DAT || selected.getTrangThai() == TrangThaiPhong.DANG_SU_DUNG) {
+            thongBao("Cảnh báo", "Không thể xóa phòng đang có khách!", Alert.AlertType.WARNING);
             return;
         }
 
         Alert alert = new Alert(Alert.AlertType.CONFIRMATION);
-        alert.setContentText("Xóa phòng " + selected.getMaPhong() + "?");
+        alert.setTitle("Xác nhận xóa");
+        alert.setHeaderText(null);
+        alert.setContentText("Bạn có thực sự muốn xóa phòng " + selected.getTenPhong() + "?");
         Optional<ButtonType> res = alert.showAndWait();
 
         if (res.isPresent() && res.get() == ButtonType.OK) {
-            if (phongDAO.delete(selected.getMaPhong())) {
+            if (phongDAO.delete(maPhongDangChon)) {
                 loadData();
                 lamMoiForm();
                 thongBao("Thành công", "Đã xóa phòng", Alert.AlertType.INFORMATION);
@@ -217,10 +273,10 @@ public class PhongController implements Initializable {
     }
 
     private void fillForm(PhongDetail p) {
-        txtMaPhong.setText(p.getMaPhong());
-        txtMaPhong.setDisable(true);
+        maPhongDangChon = p.getMaPhong();
         txtTenPhong.setText(p.getTenPhong());
         txtSoNguoi.setText(String.valueOf(p.getSoNguoiTD()));
+        cbTrangThai.setDisable(false);
         cbTrangThai.setValue(p.getTrangThai());
 
         String maLoaiCanTim = p.getMaLoai();
@@ -232,26 +288,22 @@ public class PhongController implements Initializable {
                 }
             }
         }
-
-        if (p.getDonGia() != null) {
-            txtGiaPhong.setText(p.getDonGia().toPlainString());
-        }
+        if (p.getDonGia() != null) txtGiaPhong.setText(p.getDonGia().toPlainString());
     }
 
     private void lamMoiForm() {
-        txtMaPhong.clear();
-        txtMaPhong.setDisable(false);
+        maPhongDangChon = null;
         txtTenPhong.clear();
         txtGiaPhong.clear();
         txtSoNguoi.clear();
         cbLoaiPhong.setValue(null);
-        cbTrangThai.setValue(null);
         tvPhong.getSelectionModel().clearSelection();
+        cbTrangThai.setValue(TrangThaiPhong.TRONG);
+        cbTrangThai.setDisable(true);
     }
 
     private boolean validateInput() {
-        return !txtMaPhong.getText().isEmpty() && !txtTenPhong.getText().isEmpty()
-                && cbLoaiPhong.getValue() != null && cbTrangThai.getValue() != null;
+        return !txtTenPhong.getText().isEmpty() && cbLoaiPhong.getValue() != null;
     }
 
     private void thongBao(String title, String content, Alert.AlertType type) {
@@ -260,5 +312,25 @@ public class PhongController implements Initializable {
         a.setHeaderText(null);
         a.setContentText(content);
         a.showAndWait();
+    }
+
+    private <T> void setupComboBoxPlaceholder(ComboBox<T> comboBox, String placeholder) {
+        ListCell<T> cellFactory = new ListCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(placeholder);
+                else setText(item.toString());
+            }
+        };
+        comboBox.setButtonCell(cellFactory);
+        comboBox.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(placeholder);
+                else setText(item.toString());
+            }
+        });
     }
 }
