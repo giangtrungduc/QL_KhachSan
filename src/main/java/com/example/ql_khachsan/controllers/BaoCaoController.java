@@ -287,43 +287,93 @@ public class BaoCaoController {
     }
 
     private void updateChartAndTable(String whereCondition, String groupBy, String kieuBaoCao) {
-        try {
-            chartDoanhThu.getData().clear();
-            tableData.clear();
+    try {
+        chartDoanhThu.getData().clear();
+        tableData.clear();
 
-            List<BaoCaoDTO> dataList = baoCaoDAO.getBaoCaoChiTiet(whereCondition, groupBy);
-            
-            if (dataList.isEmpty()) {
-                return;
-            }
-
-            XYChart.Series<String, Number> series = new XYChart.Series<>();
-            series.setName("Doanh thu");
-
-            // Sắp xếp và thêm dữ liệu
-            List<BaoCaoDTO> sortedData = dataList.stream()
-                    .sorted((a, b) -> a.getThoiGian().compareTo(b.getThoiGian()))
-                    .collect(Collectors.toList());
-
-            for (BaoCaoDTO item : sortedData) {
-                String label = formatTimeLabel(item.getThoiGian(), kieuBaoCao);
-                series.getData().add(new XYChart.Data<>(label, item.getDoanhThu()));
-                
-                tableData.add(new BaoCaoTableData(
-                    label, 
-                    item.getSoLuotDat(), 
-                    item.getDoanhThu(), 
-                    item.getDoanhThu()
-                ));
-            }
-
-            chartDoanhThu.getData().add(series);
-            animateChart();
-
-        } catch (Exception e) {
-            e.printStackTrace();
+        List<BaoCaoDTO> dataList = baoCaoDAO.getBaoCaoChiTiet(whereCondition, groupBy);
+        
+        if (dataList.isEmpty()) {
+            return;
         }
+
+        XYChart.Series<String, Number> series = new XYChart.Series<>();
+        series.setName("Doanh thu");
+
+        // Sắp xếp dữ liệu theo thời gian
+        List<BaoCaoDTO> sortedData = dataList.stream()
+                .sorted((a, b) -> {
+                    try {
+                        // Sắp xếp theo thời gian tăng dần
+                        return extractTimeValue(a.getThoiGian(), kieuBaoCao)
+                                .compareTo(extractTimeValue(b.getThoiGian(), kieuBaoCao));
+                    } catch (Exception e) {
+                        return 0;
+                    }
+                })
+                .collect(Collectors.toList());
+
+        // Thêm dữ liệu vào biểu đồ và bảng
+        for (BaoCaoDTO item : sortedData) {
+            String label = formatTimeLabel(item.getThoiGian(), kieuBaoCao);
+            XYChart.Data<String, Number> dataPoint = new XYChart.Data<>(label, item.getDoanhThu());
+            series.getData().add(dataPoint);
+            
+            tableData.add(new BaoCaoTableData(
+                label, 
+                item.getSoLuotDat(), 
+                item.getDoanhThu(), 
+                item.getDoanhThu()
+            ));
+        }
+
+        chartDoanhThu.getData().add(series);
+        
+        // Cấu hình lại biểu đồ để hiển thị đúng
+        configureChartAppearance();
+        animateChart();
+
+    } catch (Exception e) {
+        e.printStackTrace();
     }
+}
+
+// Thêm phương thức để trích xuất giá trị thời gian để sắp xếp
+private Integer extractTimeValue(String rawTime, String kieuBaoCao) {
+    try {
+        if ("Theo tháng".equals(kieuBaoCao)) {
+            // Trích xuất ngày từ chuỗi YYYY-MM-DD
+            if (rawTime.length() >= 10) {
+                return Integer.parseInt(rawTime.substring(8, 10)); // Ngày
+            }
+        } else {
+            // Trích xuất tháng từ chuỗi
+            if (rawTime.length() >= 7) {
+                return Integer.parseInt(rawTime.substring(5, 7)); // Tháng
+            }
+        }
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+    return 0;
+}
+
+// Thêm phương thức cấu hình biểu đồ
+private void configureChartAppearance() {
+    try {
+        // Đảm bảo các điểm dữ liệu được hiển thị đúng vị trí
+        chartDoanhThu.setAnimated(false); // Tắt animation tạm thời để fix lỗi
+        
+        // Cấu hình trục X
+        chartDoanhThu.getXAxis().setAnimated(false);
+        
+        // Auto-ranging để đảm bảo dữ liệu hiển thị cân đối
+        chartDoanhThu.autosize();
+        
+    } catch (Exception e) {
+        e.printStackTrace();
+    }
+}
 
     private String formatTimeLabel(String rawTime, String kieuBaoCao) {
         try {
