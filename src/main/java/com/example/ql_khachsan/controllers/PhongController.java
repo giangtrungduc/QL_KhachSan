@@ -95,7 +95,7 @@ public class PhongController implements Initializable {
 
         cbLoaiPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
-                if (newVal.getDonGia() != null) txtGiaPhong.setText(newVal.getDonGia().toPlainString());
+                if (newVal.getDonGia() != null) txtGiaPhong.setText(String.format("%.0f", newVal.getDonGia()));
                 txtSoNguoi.setText(String.valueOf(newVal.getSoNguoiTD()));
             }
         });
@@ -159,30 +159,55 @@ public class PhongController implements Initializable {
 
     // --- TÔ MÀU DÒNG (ĐÃ BỎ PHẦN BẢO TRÌ) ---
     private void setupRowColor() {
-        tvPhong.setRowFactory(tv -> new TableRow<PhongDetail>() {
-            @Override
-            protected void updateItem(PhongDetail item, boolean empty) {
-                super.updateItem(item, empty);
-                setStyle("");
+        tvPhong.setRowFactory(tv -> {
+            // Tạo ra một TableRow tùy chỉnh
+            TableRow<PhongDetail> row = new TableRow<PhongDetail>() {
+                @Override
+                protected void updateItem(PhongDetail item, boolean empty) {
+                    super.updateItem(item, empty);
 
-                if (item == null || empty) {
-                    return;
+                    // Gọi hàm tô màu ngay khi dữ liệu được nạp (Fix lỗi phải click mới hiện)
+                    updateStyle(this);
                 }
+            };
 
-                TrangThaiPhong status = item.getTrangThai();
+            // Thêm sự kiện: Khi người dùng Click chọn dòng -> Cũng gọi hàm tô màu lại
+            // Để nó chuyển từ màu Hồng -> Xanh dương (Mặc định) và ngược lại
+            row.selectedProperty().addListener((obs, wasSelected, isNowSelected) -> {
+                updateStyle(row);
+            });
 
-                if (status == TrangThaiPhong.TRONG) {
-                    // Màu xanh nhạt
-                    setStyle("-fx-background-color: #d4edda;");
-                } else if (status == TrangThaiPhong.DA_DAT) {
-                    // Màu vàng nhạt
-                    setStyle("-fx-background-color: #fff3cd;");
-                } else if (status == TrangThaiPhong.DANG_SU_DUNG) {
-                    // Màu đỏ nhạt
-                    setStyle("-fx-background-color: #f8d7da;");
-                }
-            }
+            return row;
         });
+    }
+
+    // Hàm hỗ trợ tô màu (Tách ra để dùng chung cho cả 2 trường hợp trên)
+    private void updateStyle(TableRow<PhongDetail> row) {
+        PhongDetail item = row.getItem();
+
+        // 1. Reset style cũ
+        row.setStyle("");
+
+        // 2. Nếu dòng trống hoặc dữ liệu null -> Không làm gì cả
+        if (item == null || row.isEmpty()) {
+            return;
+        }
+
+        // 3. [QUAN TRỌNG] Nếu dòng ĐANG ĐƯỢC CHỌN -> Để mặc định của JavaFX (Xanh dương, chữ trắng)
+        // Bằng cách return luôn, không set background color nữa.
+        if (row.isSelected()) {
+            return;
+        }
+
+        // 4. Nếu không chọn -> Tô màu nền theo trạng thái
+        TrangThaiPhong status = item.getTrangThai();
+        if (status == TrangThaiPhong.TRONG) {
+            row.setStyle("-fx-background-color: #d4edda;"); // Xanh nhạt
+        } else if (status == TrangThaiPhong.DA_DAT) {
+            row.setStyle("-fx-background-color: #fff3cd;"); // Vàng nhạt
+        } else if (status == TrangThaiPhong.DANG_SU_DUNG) {
+            row.setStyle("-fx-background-color: #f8d7da;"); // Đỏ nhạt
+        }
     }
 
     // ... (GIỮ NGUYÊN CÁC HÀM CRUD VÀ HELPER PHÍA DƯỚI CỦA BẠN) ...
@@ -288,7 +313,7 @@ public class PhongController implements Initializable {
                 }
             }
         }
-        if (p.getDonGia() != null) txtGiaPhong.setText(p.getDonGia().toPlainString());
+        if (p.getDonGia() != null) txtGiaPhong.setText(String.format("%.0f", p.getDonGia()));
     }
 
     private void lamMoiForm() {
