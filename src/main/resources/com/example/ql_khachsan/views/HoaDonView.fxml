@@ -1,0 +1,62 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="TOP_CENTER" prefWidth="500.0" spacing="10" style="-fx-background-color: white; -fx-padding: 30;" stylesheets="@../css/HoaDonStyles.css" xmlns="http://javafx.com/javafx/17.0.12" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.ql_khachsan.controllers.HoaDonController">
+
+    <Label styleClass="brand-name" text="FIVESTAR HOTEL" />
+    <Label styleClass="address" text="125 Phường Đống Đa, Quận Hà Đông, TP. Hà Nội" />
+    <Label styleClass="contact" text="Hotline: 0123.456.789 - Web: fivestar.vn" />
+
+    <Separator prefWidth="200.0" />
+
+    <Label styleClass="bill-title" text="HÓA ĐƠN THANH TOÁN" />
+
+    <HBox alignment="CENTER_LEFT" spacing="10">
+        <Label styleClass="lbl-bold" text="Mã HĐ:" />
+        <Label fx:id="lblMaHD" text="HD001" />
+        <Label maxWidth="1.7976931348623157E308" HBox.hgrow="ALWAYS" />
+        <Label styleClass="lbl-bold" text="Ngày:" />
+        <Label fx:id="lblNgayLap" text="20/11/2025" />
+    </HBox>
+
+    <VBox alignment="CENTER_LEFT" spacing="5" styleClass="section-box">
+        <HBox><Label styleClass="lbl-field" text="Khách hàng:" /><Label fx:id="lblTenKhachHang" /></HBox>
+        <HBox><Label styleClass="lbl-field" text="SĐT:" /><Label fx:id="lblSDT" /></HBox>
+        <HBox><Label styleClass="lbl-field" text="Email:" /><Label fx:id="lblEmail" /></HBox>
+    </VBox>
+
+    <Separator />
+
+    <VBox alignment="CENTER_LEFT" spacing="5" styleClass="section-box">
+        <HBox><Label styleClass="lbl-field" text="Phòng:" /><Label fx:id="lblPhong" /></HBox>
+        <HBox><Label styleClass="lbl-field" text="Loại phòng:" /><Label fx:id="lblLoaiPhong" /></HBox>
+        <HBox><Label styleClass="lbl-field" text="Đơn giá:" /><Label fx:id="lblDonGiaThucTe" /></HBox>
+        <HBox>
+            <Label styleClass="lbl-field" text="Check-in:" /><Label fx:id="lblNgayNhan" />
+            <Label style=" -fx-padding: 0 10 0 10;" text="-" />
+            <Label styleClass="lbl-field" text="Check-out:" /><Label fx:id="lblNgayTra" />
+        </HBox>
+        <HBox><Label styleClass="lbl-field" text="Số đêm:" /><Label fx:id="lblSoDem" /></HBox>
+    </VBox>
+
+    <Separator />
+
+    <HBox alignment="CENTER_RIGHT" spacing="10">
+        <Label styleClass="total-label" text="TỔNG CỘNG:" />
+        <Label fx:id="lblTongTien" styleClass="total-value" text="0 VNĐ" />
+    </HBox>
+
+    <Label fx:id="lblGhiChu" style="-fx-font-style: italic;" text="Ghi chú: ..." />
+
+    <Separator />
+    <Label style="-fx-font-size: 11px;" text="(Cảm ơn quý khách và hẹn gặp lại!)" />
+
+    <Button fx:id="btnExport" onAction="#handleExport" styleClass="btn-print" text="In Hóa Đơn / Xuất Ảnh" />
+</VBox>
