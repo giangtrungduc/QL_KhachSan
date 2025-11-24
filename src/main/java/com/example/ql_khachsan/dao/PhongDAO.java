@@ -23,24 +23,18 @@ public class PhongDAO {
 
     private PhongDetail mapResultSetToPhongDetail(ResultSet rs) throws SQLException {
         PhongDetail phongDetail = new PhongDetail();
-
-        // Thuộc tính từ PHONG
         phongDetail.setMaPhong(rs.getString("MaPhong"));
         phongDetail.setTenPhong(rs.getString("TenPhong"));
         phongDetail.setTrangThai(TrangThaiPhong.fromDbValue(rs.getString("TrangThai")));
-
-        // Thuộc tính từ LOAIPHONG (Do câu lệnh JOIN)
         phongDetail.setMaLoai(rs.getString("MaLoai"));
         phongDetail.setTenLoai(rs.getString("TenLoai"));
         phongDetail.setSoNguoiTD(rs.getInt("SoNguoiTD"));
         phongDetail.setDonGia(rs.getBigDecimal("DonGia"));
-
         return phongDetail;
     }
 
     public List<PhongDetail> getAll() {
         List<PhongDetail> phongList = new ArrayList<>();
-        // Sử dụng JOIN để lấy thông tin chi tiết Loại Phòng
         String sql = "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
                 "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
                 "FROM PHONG p JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai";
@@ -52,9 +46,7 @@ public class PhongDAO {
             while (rs.next()) {
                 phongList.add(mapResultSetToPhongDetail(rs));
             }
-
         } catch (SQLException e) {
-            System.err.println("Lỗi khi lấy danh sách phòng chi tiết (getAll): " + e.getMessage());
             e.printStackTrace();
         }
         return phongList;
@@ -62,7 +54,6 @@ public class PhongDAO {
 
     public boolean insert(Phong phong) {
         String sql = "INSERT INTO PHONG (MaPhong, TenPhong, TrangThai, MaLoai) VALUES (?, ?, ?, ?)";
-
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -71,11 +62,8 @@ public class PhongDAO {
             ps.setString(3, phong.getTrangThai().getDbValue());
             ps.setString(4, phong.getMaLoai());
 
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi thêm phòng: " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -83,7 +71,6 @@ public class PhongDAO {
 
     public boolean update(Phong phong) {
         String sql = "UPDATE PHONG SET TenPhong = ?, TrangThai = ?, MaLoai = ? WHERE MaPhong = ?";
-
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
@@ -92,11 +79,8 @@ public class PhongDAO {
             ps.setString(3, phong.getMaLoai());
             ps.setString(4, phong.getMaPhong());
 
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi cập nhật phòng " + phong.getMaPhong() + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -104,17 +88,12 @@ public class PhongDAO {
 
     public boolean delete(String maPhong) {
         String sql = "DELETE FROM PHONG WHERE MaPhong = ?";
-
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
 
             ps.setString(1, maPhong);
-
-            int rowsAffected = ps.executeUpdate();
-            return rowsAffected > 0;
-
+            return ps.executeUpdate() > 0;
         } catch (SQLException e) {
-            System.err.println("Lỗi khi xóa phòng " + maPhong + ": " + e.getMessage());
             e.printStackTrace();
             return false;
         }
@@ -122,7 +101,6 @@ public class PhongDAO {
 
     public List<PhongDetail> findAllAvailableRooms(LocalDateTime ngayNhan, LocalDateTime ngayTra) {
         List<PhongDetail> availableRooms = new ArrayList<>();
-
         String sql = "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
                 "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
                 "FROM PHONG p JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
@@ -136,8 +114,8 @@ public class PhongDAO {
 
         try (Connection connection = DatabaseConnection.getConnection();
              PreparedStatement ps = connection.prepareStatement(sql)) {
-            ps.setString(1, TrangThaiPhong.TRONG.getDbValue());
 
+            ps.setString(1, TrangThaiPhong.TRONG.getDbValue());
             ps.setString(2, TrangThaiDatPhong.DA_DAT.getDbValue());
             ps.setString(3, TrangThaiDatPhong.DANG_SU_DUNG.getDbValue());
             ps.setTimestamp(4, Timestamp.valueOf(ngayTra));
@@ -148,9 +126,7 @@ public class PhongDAO {
                     availableRooms.add(mapResultSetToPhongDetail(rs));
                 }
             }
-
         } catch (SQLException e) {
-            System.err.println("Lỗi khi tìm phòng trống: " + e.getMessage());
             e.printStackTrace();
         }
         return availableRooms;

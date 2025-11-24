@@ -1,17 +1,14 @@
 package com.example.ql_khachsan.models;
 
 import javafx.beans.property.*;
-import java.math.BigDecimal; // Sửa: Dùng BigDecimal cho tiền tệ
+import java.math.BigDecimal;
 
 public class LoaiPhong {
     private final StringProperty maLoai;
     private final StringProperty tenLoai;
     private final IntegerProperty soNguoiTD;
-    private final ObjectProperty<BigDecimal> donGia; // Sửa: Dùng ObjectProperty<BigDecimal>
+    private final ObjectProperty<BigDecimal> donGia;
 
-    /**
-     * Constructor rỗng - Bắt buộc cho DAO
-     */
     public LoaiPhong() {
         this.maLoai = new SimpleStringProperty();
         this.tenLoai = new SimpleStringProperty();
@@ -19,17 +16,12 @@ public class LoaiPhong {
         this.donGia = new SimpleObjectProperty<>();
     }
 
-    /**
-     * Constructor đầy đủ
-     */
     public LoaiPhong(String maLoai, String tenLoai, int soNguoiTD, BigDecimal donGia) {
         this.maLoai = new SimpleStringProperty(maLoai);
         this.tenLoai = new SimpleStringProperty(tenLoai);
         this.soNguoiTD = new SimpleIntegerProperty(soNguoiTD);
-        this.donGia = new SimpleObjectProperty<>(donGia); // Sửa: Dùng BigDecimal
+        this.donGia = new SimpleObjectProperty<>(donGia);
     }
-
-    // --- Getter/Setter + Property ---
 
     public String getMaLoai() { return maLoai.get(); }
     public void setMaLoai(String value) { maLoai.set(value); }
@@ -43,7 +35,6 @@ public class LoaiPhong {
     public void setSoNguoiTD(int value) { soNguoiTD.set(value); }
     public IntegerProperty soNguoiTDProperty() { return soNguoiTD; }
 
-    // Sửa: Dùng BigDecimal
     public BigDecimal getDonGia() { return donGia.get(); }
     public void setDonGia(BigDecimal value) { donGia.set(value); }
     public ObjectProperty<BigDecimal> donGiaProperty() { return donGia; }

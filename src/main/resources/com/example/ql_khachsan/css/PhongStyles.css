@@ -1,0 +1,111 @@
+.root {
+    -fx-font-family: "Segoe UI", sans-serif;
+    -fx-font-size: 14px;
+}
+
+.header-pane {
+    -fx-background-color: #2c3e50;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.2), 5, 0, 0, 2);
+}
+
+.header-title {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+.sidebar {
+    -fx-background-color: #f4f6f8;
+    -fx-border-color: transparent #e0e0e0 transparent transparent;
+}
+
+.section-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+
+.text-field, .combo-box {
+    -fx-background-color: white;
+    -fx-border-color: #bdc3c7;
+    -fx-border-radius: 4;
+    -fx-background-radius: 4;
+    -fx-padding: 8;
+}
+
+.text-field:focused, .combo-box:focused {
+    -fx-border-color: #3498db;
+    -fx-background-color: #ffffff;
+}
+
+.search-field {
+    -fx-font-size: 14px;
+    -fx-prompt-text-fill: #95a5a6;
+    -fx-background-radius: 20;
+    -fx-border-radius: 20;
+    -fx-padding: 8 15;
+}
+
+.btn {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-background-radius: 4;
+    -fx-cursor: hand;
+    -fx-padding: 8 15;
+    -fx-min-width: 60px;
+}
+
+.btn-add {
+    -fx-background-color: #27ae60;
+}
+.btn-add:hover {
+    -fx-background-color: #219150;
+}
+
+.btn-edit {
+    -fx-background-color: #f39c12;
+}
+.btn-edit:hover {
+    -fx-background-color: #d35400;
+}
+
+.btn-delete {
+    -fx-background-color: #e74c3c;
+}
+.btn-delete:hover {
+    -fx-background-color: #c0392b;
+}
+
+.btn-clear {
+    -fx-background-color: #95a5a6;
+}
+.btn-clear:hover {
+    -fx-background-color: #7f8c8d;
+}
+
+.table-view {
+    -fx-background-color: white;
+    -fx-border-color: #ecf0f1;
+    -fx-border-radius: 4;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 5, 0, 0, 1);
+}
+
+.table-view .column-header-background {
+    -fx-background-color: #ecf0f1;
+    -fx-border-width: 0 0 1 0;
+    -fx-border-color: #bdc3c7;
+}
+
+.table-view .column-header .label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #34495e;
+    -fx-alignment: center-left;
+}
+
+.table-row-cell:odd {
+    -fx-background-color: #fcfcfc;
+}
+
+.table-row-cell:selected {
+    -fx-background-color: #e1f0fa;
+    -fx-text-fill: #2c3e50;
+}

@@ -9,6 +9,8 @@ import com.example.ql_khachsan.untils.TrangThaiPhong;
 import javafx.beans.property.ReadOnlyObjectWrapper;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
+import javafx.collections.transformation.FilteredList;
+import javafx.collections.transformation.SortedList;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
 import javafx.scene.control.*;
@@ -143,7 +145,7 @@ public class PhongController implements Initializable {
         colLoaiPhong.setCellValueFactory(cell -> cell.getValue().tenLoaiProperty());
 
         colGiaPhong.setCellValueFactory(cell -> cell.getValue().donGiaProperty());
-        colGiaPhong.setCellFactory(column -> new TableCell<PhongDetail, BigDecimal>() {
+        colGiaPhong.setCellFactory(column -> new TableCell<>() {
             @Override
             protected void updateItem(BigDecimal item, boolean empty) {
                 super.updateItem(item, empty);

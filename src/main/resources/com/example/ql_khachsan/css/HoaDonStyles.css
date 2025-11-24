@@ -1,0 +1,42 @@
+.brand-name {
+    -fx-font-size: 24px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+}
+.address, .contact {
+    -fx-font-size: 12px;
+    -fx-text-fill: #7f8c8d;
+}
+.bill-title {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #2c3e50;
+    -fx-padding: 10 0;
+}
+.lbl-bold {
+    -fx-font-weight: bold;
+}
+.section-box {
+    -fx-padding: 5 0;
+}
+.lbl-field {
+    -fx-min-width: 100px;
+    -fx-text-fill: #7f8c8d;
+}
+.total-label {
+    -fx-font-size: 16px;
+    -fx-font-weight: bold;
+}
+.total-value {
+    -fx-font-size: 18px;
+    -fx-font-weight: bold;
+    -fx-text-fill: #e74c3c;
+}
+.btn-print {
+    -fx-background-color: #e67e22;
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-cursor: hand;
+    -fx-padding: 8 20;
+    -fx-margin-top: 10;
+}
