@@ -12,10 +12,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class PhongDAO {
-
-    /**
-     * Chuyển đổi ResultSet thành đối tượng Phong (Dùng cho các thao tác CRUD cơ bản).
-     */
     private Phong mapResultSetToPhong(ResultSet rs) throws SQLException {
         Phong phong = new Phong();
         phong.setMaPhong(rs.getString("MaPhong"));
@@ -25,9 +21,6 @@ public class PhongDAO {
         return phong;
     }
 
-    /**
-     * Chuyển đổi ResultSet thành đối tượng PhongDetail (Dùng cho getAll chi tiết).
-     */
     private PhongDetail mapResultSetToPhongDetail(ResultSet rs) throws SQLException {
         PhongDetail phongDetail = new PhongDetail();
 
@@ -45,11 +38,6 @@ public class PhongDAO {
         return phongDetail;
     }
 
-    // ==================== 1. getAll (Chi tiết) ====================
-
-    /**
-     * Lấy danh sách tất cả phòng, bao gồm chi tiết Loại Phòng (JOIN LOAIPHONG).
-     */
     public List<PhongDetail> getAll() {
         List<PhongDetail> phongList = new ArrayList<>();
         // Sử dụng JOIN để lấy thông tin chi tiết Loại Phòng
@@ -72,11 +60,6 @@ public class PhongDAO {
         return phongList;
     }
 
-    // ==================== 2. insert ====================
-
-    /**
-     * Thêm mới một phòng vào database.
-     */
     public boolean insert(Phong phong) {
         String sql = "INSERT INTO PHONG (MaPhong, TenPhong, TrangThai, MaLoai) VALUES (?, ?, ?, ?)";
 
@@ -98,12 +81,6 @@ public class PhongDAO {
         }
     }
 
-    // ==================== 3. update ====================
-
-    /**
-     * Cập nhật thông tin phòng (Trừ mã phòng).
-     * Hàm này cũng được dùng bởi các Trigger
-     */
     public boolean update(Phong phong) {
         String sql = "UPDATE PHONG SET TenPhong = ?, TrangThai = ?, MaLoai = ? WHERE MaPhong = ?";
 
@@ -125,11 +102,6 @@ public class PhongDAO {
         }
     }
 
-    // ==================== 4. delete ====================
-
-    /**
-     * Xóa một phòng theo mã phòng.
-     */
     public boolean delete(String maPhong) {
         String sql = "DELETE FROM PHONG WHERE MaPhong = ?";
 
@@ -148,11 +120,6 @@ public class PhongDAO {
         }
     }
 
-    // ==================== 5. findAllAvailableRooms ====================
-
-    /**
-     * Tìm danh sách phòng TRỐNG trong khoảng thời gian cụ thể (nghiệp vụ chính).
-     */
     public List<PhongDetail> findAllAvailableRooms(LocalDateTime ngayNhan, LocalDateTime ngayTra) {
         List<PhongDetail> availableRooms = new ArrayList<>();
 
@@ -189,33 +156,43 @@ public class PhongDAO {
         return availableRooms;
     }
 
-    // ==================== 6. Tìm kiếm ====================
-    /**
-     * Tìm kiếm phòng theo từ khóa (Mã phòng, Tên phòng, hoặc Tên loại).
-     * Sử dụng kỹ thuật toán tử LIKE trong SQL.
-     */
-    public List<PhongDetail> search(String keyword) {
+    public List<PhongDetail> searchAdvanced(String keyword, TrangThaiPhong status, String maLoai) {
         List<PhongDetail> list = new ArrayList<>();
-        String sql = "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
-                "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
-                "FROM PHONG p " +
-                "JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
-                "WHERE p.MaPhong LIKE ? OR p.TenPhong LIKE ? OR lp.TenLoai LIKE ?";
+        StringBuilder sql = new StringBuilder(
+                "SELECT p.MaPhong, p.TenPhong, p.TrangThai, p.MaLoai, " +
+                        "lp.TenLoai, lp.SoNguoiTD, lp.DonGia " +
+                        "FROM PHONG p JOIN LOAIPHONG lp ON p.MaLoai = lp.MaLoai " +
+                        "WHERE (p.MaPhong LIKE ? OR p.TenPhong LIKE ?) ");
 
+        if (status != null) {
+            sql.append(" AND p.TrangThai = ?");
+        }
+
+        if (maLoai != null && !maLoai.isEmpty()) {
+            sql.append(" AND p.MaLoai = ?");
+        }
         try (Connection conn = DatabaseConnection.getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+             PreparedStatement ps = conn.prepareStatement(sql.toString())) {
 
-            // Tạo chuỗi tìm kiếm dạng "%keyword%"
+            // Thiết lập tham số cho Từ khóa
             String searchPattern = "%" + keyword + "%";
+            int paramIndex = 1;
+            ps.setString(paramIndex++, searchPattern);
+            ps.setString(paramIndex++, searchPattern);
 
-            // Gán giá trị cho cả 3 dấu hỏi chấm
-            ps.setString(1, searchPattern);
-            ps.setString(2, searchPattern);
-            ps.setString(3, searchPattern);
+            // Thiết lập tham số cho Trạng thái (nếu có)
+            if (status != null) {
+                ps.setString(paramIndex++, status.getDbValue());
+            }
+
+            // Thiết lập tham số cho Loại phòng (nếu có)
+            if (maLoai != null && !maLoai.isEmpty()) {
+                ps.setString(paramIndex++, maLoai);
+            }
 
             ResultSet rs = ps.executeQuery();
             while (rs.next()) {
-                list.add(mapResultSetToPhongDetail(rs)); // Tận dụng hàm map cũ của bạn
+                list.add(mapResultSetToPhongDetail(rs));
             }
         } catch (SQLException e) {
             e.printStackTrace();

@@ -90,6 +90,8 @@
                 <HBox alignment="CENTER_LEFT" spacing="10.0">
                     <children>
                         <TextField fx:id="txtTimKiem" prefHeight="30.0" prefWidth="300.0" promptText="Tìm kiếm theo tên hoặc mã phòng..." />
+                  <ComboBox fx:id="cbLocLoaiPhong" prefWidth="150.0" promptText="-- Lọc Loại Phòng --" />
+                  <ComboBox fx:id="cbLocTrangThai" prefWidth="150.0" promptText="-- Lọc Trạng Thái --" />
                     </children>
                     <padding>
                         <Insets top="10.0" />

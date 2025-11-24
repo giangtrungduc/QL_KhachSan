@@ -16,6 +16,7 @@ import javafx.scene.control.*;
 import java.math.BigDecimal;
 import java.net.URL;
 import java.text.NumberFormat;
+import java.util.List;
 import java.util.Locale;
 import java.util.Optional;
 import java.util.ResourceBundle;
@@ -23,7 +24,8 @@ import java.util.ResourceBundle;
 public class PhongController implements Initializable {
 
     // --- FXML Fields ---
-    // Đã XÓA txtMaPhong vì bạn không muốn hiển thị nó nữa
+    @FXML private ComboBox<TrangThaiPhong> cbLocTrangThai;
+    @FXML private ComboBox<LoaiPhong> cbLocLoaiPhong;
     @FXML private TextField txtTenPhong;
     @FXML private TextField txtGiaPhong;
     @FXML private TextField txtSoNguoi;
@@ -39,9 +41,7 @@ public class PhongController implements Initializable {
     // --- TableView ---
     @FXML private TableView<PhongDetail> tvPhong;
 
-    // [MỚI] Cột STT
     @FXML private TableColumn<PhongDetail, Integer> colSTT;
-
     @FXML private TableColumn<PhongDetail, String> colMaPhong;
     @FXML private TableColumn<PhongDetail, String> colTenPhong;
     @FXML private TableColumn<PhongDetail, Integer> colSoNguoi;
@@ -53,7 +53,6 @@ public class PhongController implements Initializable {
     private LoaiPhongDAO loaiPhongDAO;
     private ObservableList<PhongDetail> danhSachPhong;
 
-    // Biến tạm để lưu mã phòng đang được chọn (vì đã xóa ô text field mã phòng nên cần biến này để biết đang sửa ai)
     private String maPhongDangChon = null;
 
     @Override
@@ -66,20 +65,31 @@ public class PhongController implements Initializable {
 
         loadData();
 
-        // --- SETUP TÌM KIẾM ---
-        txtTimKiem.textProperty().addListener((observable, oldValue, newValue) -> {
-            // Nếu ô trống -> Load lại toàn bộ danh sách
-            if (newValue == null || newValue.trim().isEmpty()) {
-                loadData();
-            } else {
-                // Nếu có chữ -> Gọi hàm tìm kiếm dưới Database
-                timKiemTuDB(newValue.trim());
-            }
-        });
+        // --- 1. SETUP BỘ LỌC TRẠNG THÁI (Thêm mục "Tất cả") ---
+        ObservableList<TrangThaiPhong> listTrangThai = FXCollections.observableArrayList(TrangThaiPhong.values());
+        listTrangThai.add(0, null);
+        cbLocTrangThai.setItems(listTrangThai);
+        setupComboBoxPlaceholder(cbLocTrangThai, "Tất cả trạng thái");
+
+        // --- 2. SETUP BỘ LỌC LOẠI PHÒNG (Thêm mục "Tất cả") ---
+        List<LoaiPhong> listLoai = loaiPhongDAO.getAll();
+        ObservableList<LoaiPhong> listLocLoai = FXCollections.observableArrayList(listLoai);
+        listLocLoai.add(0, null);
+        cbLocLoaiPhong.setItems(listLocLoai);
+        setupComboBoxPlaceholder(cbLocLoaiPhong, "Tất cả loại phòng");
+
+        // --- 3. BẮT SỰ KIỆN TÌM KIẾM (ĐÃ SỬA GỌN) ---
+        // Cả 3 ô này khi thay đổi đều gọi chung 1 hàm thucHienTimKiem
+        txtTimKiem.textProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
+        cbLocTrangThai.valueProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
+        cbLocLoaiPhong.valueProperty().addListener((obs, old, newVal) -> thucHienTimKiem());
+
+        // --- 4. TÔ MÀU BẢNG ---
+        setupRowColor();
 
         // --- SETUP UI AUTO FILL ---
         txtSoNguoi.setEditable(false);
-        txtGiaPhong.setEditable(false); // Giá tiền đi theo loại phòng nên cũng khóa luôn cho chuẩn
+        txtGiaPhong.setEditable(false);
 
         cbLoaiPhong.getSelectionModel().selectedItemProperty().addListener((obs, oldVal, newVal) -> {
             if (newVal != null) {
@@ -102,7 +112,6 @@ public class PhongController implements Initializable {
         btnXoa.setOnAction(e -> xoaPhong());
         btnLamMoi.setOnAction(e -> lamMoiForm());
 
-        // [QUAN TRỌNG] Khởi động form ở trạng thái "Thêm mới" -> Set mặc định UI
         lamMoiForm();
     }
 
@@ -110,11 +119,23 @@ public class PhongController implements Initializable {
         danhSachPhong.setAll(phongDAO.getAll());
     }
 
+    // --- HÀM TÌM KIẾM CHÍNH (THAY THẾ CHO timKiemTuDB CŨ) ---
+    private void thucHienTimKiem() {
+        String tuKhoa = txtTimKiem.getText() == null ? "" : txtTimKiem.getText().trim();
+        TrangThaiPhong trangThai = cbLocTrangThai.getValue();
+
+        String maLoai = null;
+        if (cbLocLoaiPhong.getValue() != null) {
+            maLoai = cbLocLoaiPhong.getValue().getMaLoai();
+        }
+
+        // [QUAN TRỌNG] Bạn nhớ phải có hàm searchAdvanced bên PhongDAO nhé!
+        danhSachPhong.setAll(phongDAO.searchAdvanced(tuKhoa, trangThai, maLoai));
+    }
+
     private void setupTableColumns() {
-        // [LOGIC MỚI] Cột STT tự động tăng
         colSTT.setCellValueFactory(column -> new ReadOnlyObjectWrapper<>(tvPhong.getItems().indexOf(column.getValue()) + 1));
-        // Để STT cập nhật lại khi sort hoặc filter, ta cần reset lại cell factory (hoặc đơn giản dùng cách này cho list nhỏ)
-        colSTT.setSortable(false); // Không cần sort theo STT
+        colSTT.setSortable(false);
 
         colMaPhong.setCellValueFactory(cell -> cell.getValue().maPhongProperty());
         colTenPhong.setCellValueFactory(cell -> cell.getValue().tenPhongProperty());
@@ -134,41 +155,63 @@ public class PhongController implements Initializable {
         colTrangThai.setCellValueFactory(cell -> cell.getValue().trangThaiProperty());
     }
 
-    // --- CRUD Operations ---
+    // --- TÔ MÀU DÒNG (ĐÃ BỎ PHẦN BẢO TRÌ) ---
+    private void setupRowColor() {
+        tvPhong.setRowFactory(tv -> new TableRow<PhongDetail>() {
+            @Override
+            protected void updateItem(PhongDetail item, boolean empty) {
+                super.updateItem(item, empty);
+                setStyle("");
+
+                if (item == null || empty) {
+                    return;
+                }
+
+                TrangThaiPhong status = item.getTrangThai();
+
+                if (status == TrangThaiPhong.TRONG) {
+                    // Màu xanh nhạt
+                    setStyle("-fx-background-color: #d4edda;");
+                } else if (status == TrangThaiPhong.DA_DAT) {
+                    // Màu vàng nhạt
+                    setStyle("-fx-background-color: #fff3cd;");
+                } else if (status == TrangThaiPhong.DANG_SU_DUNG) {
+                    // Màu đỏ nhạt
+                    setStyle("-fx-background-color: #f8d7da;");
+                }
+            }
+        });
+    }
+
+    // ... (GIỮ NGUYÊN CÁC HÀM CRUD VÀ HELPER PHÍA DƯỚI CỦA BẠN) ...
 
     private void themPhong() {
         if (!validateInput()) return;
-
         try {
             Phong p = new Phong();
-
-            // [LOGIC MỚI] Tự động sinh Mã Phòng từ Tên Phòng (Vừa nhập)
-            // Vì đã xóa ô nhập mã, ta phải tạo mã ngầm ở đây
             String tenPhong = txtTenPhong.getText();
             String soPhong = tenPhong.replaceAll("[^0-9]", "");
             if (soPhong.isEmpty()) {
-                thongBao("Lỗi", "Tên phòng phải chứa số để tạo mã (Ví dụ: Phòng 101)", Alert.AlertType.ERROR);
+                thongBao("Lỗi", "Tên phòng phải chứa số (VD: Phòng 101)", Alert.AlertType.ERROR);
                 return;
             }
-            p.setMaPhong("P" + soPhong); // Tự động tạo P101
+            p.setMaPhong("P" + soPhong);
             p.setTenPhong(tenPhong);
 
             if (cbLoaiPhong.getValue() != null) {
                 p.setMaLoai(cbLoaiPhong.getValue().getMaLoai());
             }
-
-            // [LOGIC MỚI] Bắt buộc là TRONG khi thêm mới
             p.setTrangThai(TrangThaiPhong.TRONG);
 
             if (phongDAO.insert(p)) {
-                thongBao("Thành công", "Thêm phòng " + p.getMaPhong() + " thành công!", Alert.AlertType.INFORMATION);
+                thongBao("Thành công", "Thêm phòng thành công!", Alert.AlertType.INFORMATION);
                 loadData();
                 lamMoiForm();
             } else {
-                thongBao("Thất bại", "Mã phòng " + p.getMaPhong() + " đã tồn tại!", Alert.AlertType.ERROR);
+                thongBao("Thất bại", "Mã phòng đã tồn tại!", Alert.AlertType.ERROR);
             }
         } catch (Exception e) {
-            thongBao("Lỗi", "Có lỗi xảy ra: " + e.getMessage(), Alert.AlertType.ERROR);
+            thongBao("Lỗi", "Lỗi: " + e.getMessage(), Alert.AlertType.ERROR);
         }
     }
 
@@ -178,13 +221,10 @@ public class PhongController implements Initializable {
             return;
         }
         if (!validateInput()) return;
-
         try {
             Phong p = new Phong();
-            // Lấy mã từ biến tạm (vì không còn ô text field để lấy)
             p.setMaPhong(maPhongDangChon);
             p.setTenPhong(txtTenPhong.getText());
-
             if (cbLoaiPhong.getValue() != null) {
                 p.setMaLoai(cbLoaiPhong.getValue().getMaLoai());
             }
@@ -193,7 +233,7 @@ public class PhongController implements Initializable {
             if (phongDAO.update(p)) {
                 thongBao("Thành công", "Cập nhật thành công!", Alert.AlertType.INFORMATION);
                 loadData();
-                lamMoiForm(); // Reset lại form sau khi sửa
+                lamMoiForm();
             } else {
                 thongBao("Lỗi", "Cập nhật thất bại!", Alert.AlertType.ERROR);
             }
@@ -207,11 +247,9 @@ public class PhongController implements Initializable {
             thongBao("Chú ý", "Vui lòng chọn phòng cần xóa", Alert.AlertType.WARNING);
             return;
         }
-
-        // Logic chặn xóa nếu phòng đang bận (giữ nguyên logic cũ của bạn)
         PhongDetail selected = tvPhong.getSelectionModel().getSelectedItem();
         if (selected.getTrangThai() == TrangThaiPhong.DA_DAT || selected.getTrangThai() == TrangThaiPhong.DANG_SU_DUNG) {
-            thongBao("Cảnh báo", "Không thể xóa phòng đang có khách hoặc đã đặt!", Alert.AlertType.WARNING);
+            thongBao("Cảnh báo", "Không thể xóa phòng đang có khách!", Alert.AlertType.WARNING);
             return;
         }
 
@@ -233,13 +271,9 @@ public class PhongController implements Initializable {
     }
 
     private void fillForm(PhongDetail p) {
-        // Lưu mã phòng đang chọn vào biến tạm
         maPhongDangChon = p.getMaPhong();
-
         txtTenPhong.setText(p.getTenPhong());
         txtSoNguoi.setText(String.valueOf(p.getSoNguoiTD()));
-
-        // [LOGIC MỚI] Khi SỬA thì CHO PHÉP chỉnh trạng thái
         cbTrangThai.setDisable(false);
         cbTrangThai.setValue(p.getTrangThai());
 
@@ -256,25 +290,17 @@ public class PhongController implements Initializable {
     }
 
     private void lamMoiForm() {
-        // Reset biến tạm
         maPhongDangChon = null;
-
         txtTenPhong.clear();
         txtGiaPhong.clear();
         txtSoNguoi.clear();
         cbLoaiPhong.setValue(null);
         tvPhong.getSelectionModel().clearSelection();
-
-        // [LOGIC MỚI] UX CHO THÊM MỚI
-        // 1. Tự động set Trạng thái là TRỐNG
         cbTrangThai.setValue(TrangThaiPhong.TRONG);
-        // 2. KHÓA ComboBox lại (người dùng nhìn thấy là TRỐNG nhưng không đổi được)
         cbTrangThai.setDisable(true);
     }
 
     private boolean validateInput() {
-        // Không check txtMaPhong nữa vì đã xóa
-        // Không check cbTrangThai vì đã set mặc định
         return !txtTenPhong.getText().isEmpty() && cbLoaiPhong.getValue() != null;
     }
 
@@ -286,8 +312,23 @@ public class PhongController implements Initializable {
         a.showAndWait();
     }
 
-    private void timKiemTuDB(String keyword) {
-        // Kết quả trả về sẽ được đổ vào danhSachPhong -> Bảng tự cập nhật
-        danhSachPhong.setAll(phongDAO.search(keyword));
+    private <T> void setupComboBoxPlaceholder(ComboBox<T> comboBox, String placeholder) {
+        ListCell<T> cellFactory = new ListCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(placeholder);
+                else setText(item.toString());
+            }
+        };
+        comboBox.setButtonCell(cellFactory);
+        comboBox.setCellFactory(param -> new ListCell<>() {
+            @Override
+            protected void updateItem(T item, boolean empty) {
+                super.updateItem(item, empty);
+                if (empty || item == null) setText(placeholder);
+                else setText(item.toString());
+            }
+        });
     }
 }
