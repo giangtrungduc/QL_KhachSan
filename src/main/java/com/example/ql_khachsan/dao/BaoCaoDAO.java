@@ -6,14 +6,13 @@ import com.example.ql_khachsan.untils.DatabaseConnection;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
 public class BaoCaoDAO {
 
     public double getTongDoanhThu(String whereCondition) {
-        // Công thức: Tổng tiền = (Ngày Trả - Ngày Nhận) * Đơn Giá Thực Tế
-        // DATEDIFF trong MySQL trả về số ngày giữa 2 mốc thời gian
         String sql = "SELECT SUM(DATEDIFF(DP.NgayTra, DP.NgayNhan) * DP.DonGiaThucTe) as TotalRevenue " +
                 "FROM HOADON HD " +
                 "JOIN PHIEUDATPHONG DP ON HD.MaDP = DP.MaDP " +
@@ -32,10 +31,7 @@ public class BaoCaoDAO {
     }
 
     public int getTongLuotDat(String whereCondition) {
-        String conditionPDP = whereCondition.replace("NgayLap", "NgayDat");
-
-        // Đếm số phiếu đặt phòng
-        String sql = "SELECT COUNT(*) as TotalBookings FROM PHIEUDATPHONG " + conditionPDP;
+        String sql = "SELECT COUNT(*) as TotalBookings FROM HOADON HD " + whereCondition;
 
         try (Connection conn = DatabaseConnection.getConnection();
              PreparedStatement ps = conn.prepareStatement(sql);
@@ -50,7 +46,6 @@ public class BaoCaoDAO {
     }
 
     public String getTopLoaiPhong(String whereCondition) {
-        // Tính tổng doanh thu theo từng loại phòng và lấy loại cao nhất
         String sql = "SELECT LP.TenLoai, SUM(DATEDIFF(DP.NgayTra, DP.NgayNhan) * DP.DonGiaThucTe) as DoanhThu " +
                 "FROM HOADON HD " +
                 "JOIN PHIEUDATPHONG DP ON HD.MaDP = DP.MaDP " +
@@ -75,9 +70,8 @@ public class BaoCaoDAO {
     public List<BaoCaoDTO> getBaoCaoChiTiet(String whereCondition, String groupBy) {
         List<BaoCaoDTO> list = new ArrayList<>();
 
-        // Tính toán chi tiết cho biểu đồ và bảng
         String sql = "SELECT " + groupBy + " as ThoiGian, " +
-                "COUNT(*) as SoLuot, " +
+                "COUNT(HD.MaHD) as SoLuot, " +
                 "SUM(DATEDIFF(DP.NgayTra, DP.NgayNhan) * DP.DonGiaThucTe) as DoanhThu " +
                 "FROM HOADON HD " +
                 "JOIN PHIEUDATPHONG DP ON HD.MaDP = DP.MaDP " +
@@ -99,5 +93,39 @@ public class BaoCaoDAO {
             e.printStackTrace();
         }
         return list;
+    }
+
+    // Tính tổng số phòng
+    public int getTongSoPhong() {
+        String sql = "SELECT COUNT(*) as TongSoPhong FROM PHONG";
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("TongSoPhong");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 10; // Mặc định 10 phòng nếu có lỗi
+    }
+
+    // Tính tổng số đêm đã đặt
+    public int getTongSoDemDaDat(String whereCondition) {
+        String sql = "SELECT SUM(DATEDIFF(DP.NgayTra, DP.NgayNhan)) as TongSoDem " +
+                "FROM HOADON HD " +
+                "JOIN PHIEUDATPHONG DP ON HD.MaDP = DP.MaDP " +
+                whereCondition;
+
+        try (Connection conn = DatabaseConnection.getConnection();
+             PreparedStatement ps = conn.prepareStatement(sql);
+             ResultSet rs = ps.executeQuery()) {
+            if (rs.next()) {
+                return rs.getInt("TongSoDem");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return 0;
     }
 }
