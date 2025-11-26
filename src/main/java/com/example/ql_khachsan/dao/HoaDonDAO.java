@@ -24,7 +24,7 @@ public class HoaDonDAO {
             ps.setString(2, hd.getGhiChu());
             ps.setTimestamp(3, Timestamp.valueOf(hd.getNgayLap()));
             ps.setBigDecimal(4, hd.getTongTien());
-            ps.setString(5, hd.getMaDP());
+//            ps.setString(5, hd.getMaDP());
             return ps.executeUpdate() > 0;
         } catch (SQLException e) {
             e.printStackTrace();
@@ -36,7 +36,7 @@ public class HoaDonDAO {
         List<HoaDon> list = new ArrayList<>();
         String sql = "SELECT HD.MaHD, HD.NgayLap, HD.MaDP, HD.GhiChu, " +
                 "DP.NgayNhan, DP.NgayTra, DP.DonGiaThucTe, " +
-                "KH.HoTen, KH.SDT, KH.Email, P.TenPhong, LP.TenLoai " +
+                "KH.maKH, KH.HoTen, KH.SDT, KH.Email, P.TenPhong, LP.TenLoai " +
                 "FROM HOADON HD " +
                 "JOIN PHIEUDATPHONG DP ON HD.MaDP = DP.MaDP " +
                 "JOIN PHONG P ON DP.MaPhong = P.MaPhong " +
@@ -77,7 +77,8 @@ public class HoaDonDAO {
                         rs.getString("GhiChu"),
                         ngayLap,
                         tongTien,
-                        rs.getString("HoTen")
+                        rs.getString("HoTen"),
+                        rs.getString("maKH")
                 );
 
                 hd.setSdt(rs.getString("SDT"));

@@ -12,6 +12,7 @@ public class HoaDon {
     private final ObjectProperty<LocalDateTime> ngayLap;
     private final ObjectProperty<BigDecimal> tongTien;
     private final StringProperty tenKH;
+    private final StringProperty maKH;
 
     private String sdt;
     private String email;
@@ -29,9 +30,10 @@ public class HoaDon {
         this.ngayLap = new SimpleObjectProperty<>();
         this.tongTien = new SimpleObjectProperty<>();
         this.tenKH = new SimpleStringProperty();
+        this.maKH = new SimpleStringProperty();
     }
 
-    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, BigDecimal tongTien, String tenKH) {
+    public HoaDon(int stt, String maHD, String maDP, String ghiChu, LocalDateTime ngayLap, BigDecimal tongTien, String tenKH, String maKH) {
         this.stt = new SimpleIntegerProperty(stt);
         this.maHD = new SimpleStringProperty(maHD);
         this.maDP = new SimpleStringProperty(maDP);
@@ -39,6 +41,7 @@ public class HoaDon {
         this.ngayLap = new SimpleObjectProperty<>(ngayLap);
         this.tongTien = new SimpleObjectProperty<>(tongTien);
         this.tenKH = new SimpleStringProperty(tenKH);
+        this.maKH = new SimpleStringProperty(maKH);
     }
 
     public int getStt() { return stt.get(); }
@@ -47,8 +50,8 @@ public class HoaDon {
     public String getMaHD() { return maHD.get(); }
     public StringProperty maHDProperty() { return maHD; }
 
-    public String getMaDP() { return maDP.get(); }
-    public StringProperty maDPProperty() { return maDP; }
+//    public String getMaDP() { return maDP.get(); }
+//    public StringProperty maDPProperty() { return maDP; }
 
     public String getGhiChu() { return ghiChu.get(); }
     public StringProperty ghiChuProperty() { return ghiChu; }
@@ -60,9 +63,10 @@ public class HoaDon {
     public ObjectProperty<BigDecimal> tongTienProperty() { return tongTien; }
 
     public String getTenKH() { return tenKH.get(); }
-    public void setTenKH(String tenKH) { this.tenKH.set(tenKH); }
     public StringProperty tenKHProperty() { return tenKH; }
 
+    public String getMaKH() { return maKH.get(); }
+    public StringProperty maKHProperty() { return maKH; };
     public String getSdt() { return sdt; }
     public void setSdt(String sdt) { this.sdt = sdt; }
 
