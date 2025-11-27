@@ -25,7 +25,7 @@
 }
 
 .text-field, .password-field {
-    -fx-background-color: white;
+    -fx-background-color: #ffffff;
     -fx-border-color: #bdc3c7;
     -fx-border-radius: 4;
     -fx-background-radius: 4;
@@ -115,10 +115,14 @@
 }
 
 .table-row-cell:odd {
-    -fx-background-color: #fcfcfc;
+    -fx-background-color: #ffffff;
 }
 
 .table-row-cell:selected {
     -fx-background-color: #e1f0fa;
+    -fx-text-fill: #2c3e50;
+}
+
+.table-row-cell:selected .table-cell {
     -fx-text-fill: #2c3e50;
 }
