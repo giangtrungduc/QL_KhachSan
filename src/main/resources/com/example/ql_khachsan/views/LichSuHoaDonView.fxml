@@ -42,7 +42,8 @@
                 <TableColumn fx:id="colSTT" prefWidth="50" text="STT" />
                 <TableColumn fx:id="colMaHD" prefWidth="100" text="Mã HĐ" />
                 <TableColumn fx:id="colHoTen" prefWidth="180" text="Khách Hàng" />
-                <TableColumn fx:id="colMaDP" prefWidth="100" text="Mã Phiếu" />
+                <TableColumn fx:id="colMaKH" prefWidth="100" text="Mã KH" />
+                <!--                <TableColumn fx:id="colMaDP" prefWidth="100" text="Mã Phiếu" />-->
                 <TableColumn fx:id="colNgayLap" prefWidth="150" text="Ngày Lập" />
                 <TableColumn fx:id="colTongTien" prefWidth="150" text="Tổng Tiền" />
                 <TableColumn fx:id="colGhiChu" prefWidth="150" text="Ghi Chú" />

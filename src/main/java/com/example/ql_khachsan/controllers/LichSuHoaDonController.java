@@ -13,6 +13,8 @@ import javafx.scene.control.*;
 import javafx.stage.Modality;
 import javafx.stage.Stage;
 import javafx.util.Callback;
+import javafx.util.StringConverter;
+import java.time.format.ResolverStyle;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -24,7 +26,8 @@ public class LichSuHoaDonController {
     @FXML private TableColumn<HoaDon, Integer> colSTT;
     @FXML private TableColumn<HoaDon, String> colMaHD;
     @FXML private TableColumn<HoaDon, String> colHoTen;
-    @FXML private TableColumn<HoaDon, String> colMaDP;
+    @FXML private TableColumn<HoaDon, String> colMaKH;
+    //    @FXML private TableColumn<HoaDon, String> colMaDP;
     @FXML private TableColumn<HoaDon, String> colNgayLap;
     @FXML private TableColumn<HoaDon, String> colGhiChu;
     @FXML private TableColumn<HoaDon, String> colTongTien;
@@ -43,7 +46,8 @@ public class LichSuHoaDonController {
         colSTT.setCellValueFactory(c -> c.getValue().sttProperty().asObject());
         colMaHD.setCellValueFactory(c -> c.getValue().maHDProperty());
         colHoTen.setCellValueFactory(c -> c.getValue().tenKHProperty());
-        colMaDP.setCellValueFactory(c -> c.getValue().maDPProperty());
+        colMaKH.setCellValueFactory(c -> c.getValue().maKHProperty());
+//        colMaDP.setCellValueFactory(c -> c.getValue().maDPProperty());
         colGhiChu.setCellValueFactory(c -> c.getValue().ghiChuProperty());
 
         colTongTien.setCellValueFactory(c -> new ReadOnlyStringWrapper(String.format("%,.0f VNĐ", c.getValue().getTongTien())));
@@ -52,9 +56,33 @@ public class LichSuHoaDonController {
             LocalDateTime dt = c.getValue().getNgayLap();
             return new ReadOnlyStringWrapper(dt != null ? dt.format(dtfView) : "");
         });
-
+        String pattern = "dd/MM/yyyy";
+        DateTimeFormatter dateFormatter = DateTimeFormatter.ofPattern(pattern).withResolverStyle(ResolverStyle.SMART);;
+        StringConverter <LocalDate> converter = new StringConverter<LocalDate>() {
+            @Override
+            public String toString(LocalDate date) {
+                if (date != null) {
+                    return dateFormatter.format(date);
+                }
+                return "";
+            }
+            @Override
+            public LocalDate fromString(String string) {
+                if (string == null || string.isEmpty()) {
+                    return null;
+                }
+                try {
+                    return LocalDate.parse(string, dateFormatter);
+                } catch (java.time.format.DateTimeParseException e) {
+                    System.err.println("Lỗi parse ngày: " + string);
+                    return null;
+                }
+            }
+        };
         addButtonToTable();
         loadData(null, null, null);
+        dpFrom.setConverter(converter);
+        dpTo.setConverter(converter);
     }
 
     @FXML
@@ -64,7 +92,6 @@ public class LichSuHoaDonController {
         LocalDate to = dpTo.getValue();
         loadData(tenKH.isEmpty() ? null : tenKH, from, to);
     }
-
     private void loadData(String tenKH, LocalDate from, LocalDate to) {
         data.clear();
         try {
